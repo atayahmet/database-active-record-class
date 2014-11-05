@@ -1,0 +1,30 @@
+{
+    "name": "atayahmet/codeigniter-external-db-driver",
+    "type": "library",
+    "description": "the written of codeigniter database driver /super-object (get_instance) harmony problem with php 5.3 for",
+    "keywords": ["external-db", "codeigniter", "php-5.3"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ahmet ATAY"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.3"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.0",
+        "squizlabs/php_codesniffer": "~1.5"
+    },
+    "autoload": {
+        "psr-0": {
+            "DbHelper": "src/",
+            "DbHelper\\PHPUnit": "test/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.x-dev"
+        }
+    }
+}
