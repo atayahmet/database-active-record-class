@@ -18,8 +18,8 @@
     },
     "autoload": {
         "psr-0": {
-            "DB": "src/",
-            "DB\\PHPUnit": "test/"
+            "Db": "src/",
+            "Db\\PHPUnit": "test/"
         }
     },
     "extra": {
