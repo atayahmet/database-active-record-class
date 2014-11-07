@@ -12,8 +12,6 @@ class Query {
 		
 		$class = __NAMESPACE__ .'\drivers\\' . substr(self::$driver,0,2) . '\\' . self::$driver;
 		
-		$_driver = 'Db\drivers\My\\' . self::$driver;
-		
 		return call_user_func_array(array($class, $method), $parm);
 	}
 	
@@ -30,7 +28,7 @@ class Query {
 				
 				$_driver = 'Db\drivers\My\\' . self::$driver;
 				
-				$_driver::connect($db[$active_group]);
+				$_driver::init($db[$active_group]);
 			}
 		}else{
 			self::$dbconf = $config;
