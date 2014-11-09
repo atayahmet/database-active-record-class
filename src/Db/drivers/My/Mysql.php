@@ -15,6 +15,7 @@ class Mysql implements MysqlInterface {
 	private static $where = array();
 	private static $or_where = array();
 	private static $where_in = array();
+	private static $or_where_in = array();
 	private static $limit = null;
 	private static $offset = null;
 	private static $table;
@@ -75,6 +76,17 @@ class Mysql implements MysqlInterface {
 		return new static;
 	}
 	
+	public static function or_where_in()
+	{
+		$args = func_get_args();
+		
+		if(count($args) == 2){
+			self::$or_where_in[] = array($args[0] => $args[1]);
+		}
+		
+		return new static;
+	}
+	
 	public static function from($table = null)
 	{
 		self::$table = $table;
@@ -112,6 +124,7 @@ class Mysql implements MysqlInterface {
 				'where' => self::$where,
 				'or_where' => self::$or_where,
 				'where_in' => self::$where_in,
+				'or_where_in' => self::$or_where_in,
 				'limit' => self::$limit,
 				'offset' => self::$offset,
 				'from' => self::dbprefix(self::$table)
@@ -248,6 +261,7 @@ class Mysql implements MysqlInterface {
 		self::$where = array();
 		self::$or_where = array();
 		self::$where_in = array();
+		self::$or_where_in = array();
 		self::$limit = '';
 		self::$offset = '';
 		self::$table = '';
