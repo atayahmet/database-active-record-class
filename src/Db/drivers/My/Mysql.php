@@ -13,6 +13,8 @@ class Mysql implements MysqlInterface {
 	
 	private static $select = array();
 	private static $where = array();
+	private static $or_where = array();
+	private static $where_in = array();
 	private static $limit = null;
 	private static $offset = null;
 	private static $table;
@@ -23,6 +25,7 @@ class Mysql implements MysqlInterface {
 	protected static $Queries = array();
 	protected static $dbClosed = false;
 	
+	public static $numrows;
 	public function __construct()
 	{
 		//	if(is_null(self::$dbLink)) self::init();
@@ -37,7 +40,37 @@ class Mysql implements MysqlInterface {
 	
 	public static function where($_where = null)
 	{
-		self::$where[] = $_where;
+		$args = func_get_args();
+		
+		if(count($args) == 2){
+			self::$where[] = array($args[0] => $args[1]);
+		}else{
+			self::$where[] = $_where;
+		}
+		
+		return new static;
+	}
+	
+	public static function or_where($_or_where = null)
+	{
+		$args = func_get_args();
+		
+		if(count($args) == 2){
+			self::$or_where[] = array($args[0] => $args[1]);
+		}else{
+			self::$or_where[] = $_or_where;
+		}
+		
+		return new static;
+	}
+	
+	public static function where_in()
+	{
+		$args = func_get_args();
+		
+		if(count($args) == 2){
+			self::$where_in[] = array($args[0] => $args[1]);
+		}
 		
 		return new static;
 	}
@@ -77,14 +110,16 @@ class Mysql implements MysqlInterface {
 			array(
 				'select' => self::$select,
 				'where' => self::$where,
+				'or_where' => self::$or_where,
+				'where_in' => self::$where_in,
 				'limit' => self::$limit,
 				'offset' => self::$offset,
 				'from' => self::dbprefix(self::$table)
 			)
 		);
-		var_dump(self::$query);
-		self::execute();
 		
+		self::execute();
+		var_dump(self::$query);
 		return clone new static;
 	}
 	
@@ -211,6 +246,8 @@ class Mysql implements MysqlInterface {
 	{
 		self::$select = array();
 		self::$where = array();
+		self::$or_where = array();
+		self::$where_in = array();
 		self::$limit = '';
 		self::$offset = '';
 		self::$table = '';

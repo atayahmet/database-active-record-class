@@ -4,6 +4,8 @@ class QueryCreator {
 	protected static $db;
 	protected static $select = '';
 	protected static $where = '';
+	protected static $or_where = '';
+	protected static $where_in = '';
 	protected static $limit = '';
 	protected static $offset;
 	protected static $table;
@@ -39,15 +41,51 @@ class QueryCreator {
 			if(is_array($w)){
 				foreach($w as $f => $__w){
 					$fieldAndOp = self::checkOp($f);
-					
 					self::$where .= empty(self::$where) ? "{$fieldAndOp} '{$__w}'" : " AND {$fieldAndOp} '{$__w}'";
 				}
 			}else{
 				self::$where .= empty(self::$where) ? $w : " AND {$w}";
 			}
 		}
-		
-		self::$where = 'WHERE ' . self::$where;
+	}
+	
+	private static function or_where($_or_where)
+	{
+		foreach($_or_where as $w){
+			$whereTxt = '';
+			
+			if(is_array($w)){
+				foreach($w as $f => $__w){
+					$fieldAndOp = self::checkOp($f);
+					$whereTxt .= empty($whereTxt) ? "{$fieldAndOp} '{$__w}'" : " AND {$fieldAndOp} '{$__w}'";
+				}
+				
+				self::$or_where .= ' OR (' . $whereTxt . ')';
+			}else{
+				self::$or_where .= empty(self::$or_where) ? $w : " OR {$w}";
+			}
+		}
+	}
+	
+	private static function where_in($_where_in)
+	{
+		if(is_array($_where_in)){
+			foreach($_where_in as $w){
+				foreach($w as $f => $__w){
+					$_in = '';
+					
+					if(is_array($__w)){
+						foreach($__w as $w_){
+							$_in .= (empty($_in) ? "'$w_'" : ",'$w_'");
+						}
+					}else{
+						$_in = (empty($_in) ? "'$__w'" : ",'$__w'");
+					}
+					
+					self::$where_in .= empty(self::$where_in) ? "{$f} IN ({$_in})" : " AND {$f} IN ({$_in})";
+				}
+			}
+		}
 	}
 	
 	private static function limit($_limit = null)
@@ -78,8 +116,6 @@ class QueryCreator {
 		}
 		
 		return self::returnSql(__FUNCTION__);
-		
-		
 	}
 	
 	private static function checkOp($op)
@@ -101,7 +137,10 @@ class QueryCreator {
 	{
 		switch($type){
 			case "get";
-				 $query =  self::$select . ' ' . self::$from . ' ' . self::$where . ' ' . self::$limit;
+				$orWhere = self::whereRegulator('or_where', self::$or_where);
+				$whereIn = self::whereRegulator('where_in', self::$where_in);
+				
+				$query =  self::$select . ' ' . self::$from . ' ' . 'WHERE ' . self::$where . $orWhere . $whereIn . ' ' . self::$limit;
 				break;
 		}
 		
@@ -111,10 +150,31 @@ class QueryCreator {
 		
 	}
 	
+	protected static function whereRegulator($type = false, $where = false)
+	{
+		if($type && $where){
+			if($type == 'or_where'){
+				if(empty(self::$where) && preg_match('/OR (.*?)/',$where) > 0){
+					return $or_where = substr($where,4);
+				}
+			}
+			
+			elseif($type == 'where_in'){
+				if(!empty(self::$where) || !empty(self::$or_where)){
+					return ' AND ' . $where;
+				}
+			}
+		}
+		
+		return $where;
+	}
+	
 	protected static function emptySqlVars()
 	{
 		self::$select = '';
 		self::$where = '';
+		self::$or_where = '';
+		self::$where_in = '';
 		self::$from = '';
 		self::$limit = '';
 		self::$offset = '';
