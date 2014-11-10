@@ -19,8 +19,16 @@ class Mysql implements MysqlInterface {
 	private static $or_where_not_in = array();
 	private static $or_where_in = array();
 	private static $like = array();
+	private static $or_like = array();
+	private static $not_like = array();
+	private static $or_not_like = array();
+	private static $groupby = array();
+	private static $orderby = array();
+	private static $having = array();
+	private static $or_having = array();
 	private static $limit = null;
 	private static $offset = null;
+	private static $distinct = '';
 	private static $table;
 	
 	protected static $query;
@@ -120,6 +128,96 @@ class Mysql implements MysqlInterface {
 		return new static;
 	}
 	
+	public static function or_like($field = false, $value = false, $pos = 'both')
+	{
+		if($field && $value){
+			self::$or_like[] = array($field => array('val' => $value, 'pos' => $pos));
+		}
+		
+		return new static;
+	}
+	
+	public static function not_like($field = false, $value = false, $pos = 'both')
+	{
+		if($field && $value){
+			self::$not_like[] = array($field => array('val' => $value, 'pos' => $pos));
+		}
+		
+		return new static;
+	}
+	
+	public static function or_not_like($field = false, $value = false, $pos = 'both')
+	{
+		if($field && $value){
+			self::$or_not_like[] = array($field => array('val' => $value, 'pos' => $pos));
+		}
+		
+		return new static;
+	}
+	
+	public static function group_by($field = false)
+	{
+		if($field){
+			if(is_array($field)){
+				foreach($field as $f){
+					self::$groupby[] = $f;
+				}
+			}else{
+				self::$groupby[] = $field;
+			}
+		}
+		
+		return new static;
+	}
+	
+	public static function distinct()
+	{
+		self::$distinct = ' DISTINCT ';
+		
+		return new static;
+	}
+	
+	public static function having()
+	{
+		$args = func_get_args();
+		
+		if(count($args) > 0){
+			if(count($args) > 1){
+				self::$having[] = array($args[0] => $args[1]);
+			}else{
+				self::$having[] = $args[0];
+			}
+		}
+		
+		return new static;
+	}
+	
+	public static function or_having()
+	{
+		$args = func_get_args();
+		
+		if(count($args) > 0){
+			if(count($args) > 1){
+				self::$or_having[] = array($args[0] => $args[1]);
+			}else{
+				self::$or_having[] = $args[0];
+			}
+		}
+		
+		return new static;
+	}
+	
+	public static function order_by()
+	{
+		$args = func_get_args();
+		
+		if(count($args) == 2){
+			self::$orderby[] = array($args[0] => $args[1]);
+		}
+		
+		return new static;
+	}
+	
 	public static function from($table = null)
 	{
 		self::$table = $table;
@@ -154,6 +252,7 @@ class Mysql implements MysqlInterface {
 		self::$query = QR::get(
 			array(
 				'select' => self::$select,
+				'from' => self::dbprefix(self::$table),
 				'where' => self::$where,
 				'or_where' => self::$or_where,
 				'where_in' => self::$where_in,
@@ -161,15 +260,27 @@ class Mysql implements MysqlInterface {
 				'where_not_in' => self::$where_not_in,
 				'or_where_not_in' => self::$or_where_not_in,
 				'like' => self::$like,
+				'or_like' => self::$or_like,
+				'not_like' => self::$not_like,
+				'or_not_like' => self::$or_not_like,
 				'limit' => self::$limit,
 				'offset' => self::$offset,
-				'from' => self::dbprefix(self::$table)
+				'group_by' => self::$groupby,
+				'order_by' => self::$orderby,
+				'distinct' => self::$distinct,
+				'having' => self::$having,
+				'or_having' => self::$or_having
 			)
 		);
 		
 		self::execute();
 		var_dump(self::$query);
 		return clone new static;
+	}
+	
+	public static function count_all_results($table = false)
+	{
+		
 	}
 	
 	protected static function execute()
@@ -301,6 +412,14 @@ class Mysql implements MysqlInterface {
 		self::$or_where_not_in = array();
 		self::$or_where_in = array();
 		self::$like = array();
+		self::$or_like = array();
+		self::$not_like = array();
+		self::$or_not_like = array();
+		self::$groupby = array();
+		self::$orderby = array();
+		self::$having = array();
+		self::$or_having = array();
+		self::$distinct = '';
 		self::$limit = '';
 		self::$offset = '';
 		self::$table = '';
