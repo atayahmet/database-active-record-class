@@ -6,6 +6,9 @@ Interface MysqlInterface
     public static function select($_select = null);
     public static function where($_where = null);
 	public static function where_in();
+	public static function or_where_in();
+	public static function where_not_in();
+	public static function or_where_not_in();
 	public static function or_where($_where = null);
 	public static function limit($_limit = null, $_offset = null);
 	public static function offset($_offset);

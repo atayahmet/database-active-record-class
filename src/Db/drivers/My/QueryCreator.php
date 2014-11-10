@@ -6,6 +6,8 @@ class QueryCreator {
 	protected static $where = '';
 	protected static $or_where = '';
 	protected static $where_in = '';
+	protected static $where_not_in = '';
+	protected static $or_where_not_in = '';
 	protected static $or_where_in = '';
 	protected static $limit = '';
 	protected static $offset;
@@ -63,22 +65,32 @@ class QueryCreator {
 				
 				self::$or_where .= ' OR (' . $whereTxt . ')';
 			}else{
-				self::$or_where .= empty(self::$or_where) ? $w : " OR {$w}";
+				self::$or_where .= empty(self::$or_where) && empty(self::$where) ? "({$w})" : " OR ({$w})";
 			}
 		}
 	}
 	
 	private static function where_in($_where_in)
 	{
-		self::$where_in = self::whereVariation('IN','AND',$_where_in);
+		self::$where_in = self::whereInVariation('IN','AND',$_where_in);
 	}
 	
 	private static function or_where_in($_where_in)
 	{
-		self::$or_where_in = self::whereVariation('IN','AND',$_where_in);
+		self::$or_where_in = self::whereInVariation('IN','OR',$_where_in);
 	}
 	
-	private static function whereVariation($com, $op, $where)
+	private static function where_not_in($_where_not_in)
+	{
+		self::$where_not_in = self::whereInVariation('NOT IN','AND',$_where_not_in);
+	}
+	
+	private static function or_where_not_in($_or_where_not_in)
+	{
+		self::$or_where_not_in = self::whereInVariation('NOT IN','OR',$_or_where_not_in);
+	}
+
+	private static function whereInVariation($com, $op, $where)
 	{
 		$_where = '';
 		
@@ -155,8 +167,9 @@ class QueryCreator {
 				$orWhere = self::whereRegulator('or_where', self::$or_where);
 				$whereIn = self::whereRegulator('where_in', self::$where_in);
 				$orWhereIn = self::whereRegulator('or_where_in', self::$or_where_in);
-				
-				$query =  self::$select . ' ' . self::$from . ' ' . 'WHERE ' . self::$where . $orWhere . $whereIn . $orWhereIn . ' ' . self::$limit;
+				$whereNotIn = self::whereRegulator('where_not_in', self::$where_not_in);
+				$orWhereNotIn = self::whereRegulator('or_where_not_in', self::$or_where_not_in);
+				$query =  self::$select . ' ' . self::$from . ' ' . 'WHERE ' . self::$where . $orWhere . $whereIn . $orWhereIn . $whereNotIn . $orWhereNotIn . ' ' . self::$limit;
 				break;
 		}
 		
@@ -180,6 +193,14 @@ class QueryCreator {
 			elseif($type == 'or_where_in' && (!empty(self::$where) || !empty(self::$or_where) || !empty(self::$where_in))){
 				return ' OR ' . $where;
 			}
+
+			elseif($type == 'where_not_in' && (!empty(self::$where) || !empty(self::$or_where) || !empty(self::$where_in) || !empty(self::$or_where_in))){
+				return ' AND ' . $where;
+			}
+			
+			elseif($type == 'or_where_not_in' && (!empty(self::$where) || !empty(self::$or_where) || !empty(self::$where_in) || !empty(self::$or_where_in) || !empty(self::$where_not_in))){
+				return ' OR ' . $where;
+			}
 		}
 		
 		return $where;
@@ -191,6 +212,8 @@ class QueryCreator {
 		self::$where = '';
 		self::$or_where = '';
 		self::$where_in = '';
+		self::$where_not_in = '';
+		self::$or_where_not_in = '';
 		self::$or_where_in = '';
 		self::$from = '';
 		self::$limit = '';
