@@ -18,6 +18,7 @@ class Mysql implements MysqlInterface {
 	private static $where_not_in = array();
 	private static $or_where_not_in = array();
 	private static $or_where_in = array();
+	private static $like = array();
 	private static $limit = null;
 	private static $offset = null;
 	private static $table;
@@ -110,6 +111,15 @@ class Mysql implements MysqlInterface {
 		return new static;
 	}
 	
+	public static function like($field = false, $value = false, $pos = 'both')
+	{
+		if($field && $value){
+			self::$like[] = array($field => array('val' => $value, 'pos' => $pos));
+		}
+		
+		return new static;
+	}
+	
 	public static function from($table = null)
 	{
 		self::$table = $table;
@@ -150,6 +160,7 @@ class Mysql implements MysqlInterface {
 				'or_where_in' => self::$or_where_in,
 				'where_not_in' => self::$where_not_in,
 				'or_where_not_in' => self::$or_where_not_in,
+				'like' => self::$like,
 				'limit' => self::$limit,
 				'offset' => self::$offset,
 				'from' => self::dbprefix(self::$table)
@@ -289,6 +300,7 @@ class Mysql implements MysqlInterface {
 		self::$where_not_in = array();
 		self::$or_where_not_in = array();
 		self::$or_where_in = array();
+		self::$like = array();
 		self::$limit = '';
 		self::$offset = '';
 		self::$table = '';

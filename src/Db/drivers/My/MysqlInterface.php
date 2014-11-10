@@ -10,6 +10,7 @@ Interface MysqlInterface
 	public static function where_not_in();
 	public static function or_where_not_in();
 	public static function or_where($_where = null);
+	public static function like($field = false, $value = false, $pos = 'both');
 	public static function limit($_limit = null, $_offset = null);
 	public static function offset($_offset);
 	public static function num_rows();

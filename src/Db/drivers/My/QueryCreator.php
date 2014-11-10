@@ -9,6 +9,7 @@ class QueryCreator {
 	protected static $where_not_in = '';
 	protected static $or_where_not_in = '';
 	protected static $or_where_in = '';
+	protected static $like = '';
 	protected static $limit = '';
 	protected static $offset;
 	protected static $table;
@@ -89,7 +90,45 @@ class QueryCreator {
 	{
 		self::$or_where_not_in = self::whereInVariation('NOT IN','OR',$_or_where_not_in);
 	}
-
+	
+	private static function like($_like)
+	{
+		self::$like = self::likeVariation('LIKE', 'AND', $_like);
+	}
+	
+	private static function likeVariation($compare, $operator, $_like)
+	{
+		$likeTxt = '';
+		
+		if(is_array($_like)){
+			foreach($_like as $l){
+				$field = key($l);
+				$likeTxt .= ' ' . $operator . ' ' . $field . ' ' . $compare . ' ' . self::likePos(current($l));
+			}
+		}
+		
+		return $likeTxt;
+	}
+	
+	private static function likePos($like)
+	{
+		if($like['pos'] == 'both'){
+			return " '%{$like['val']}%'";
+		}
+		
+		elseif($like['pos'] == 'before'){
+			return " '%{$like['val']}'";
+		}
+		
+		elseif($like['pos'] == 'after'){
+			return " '{$like['val']}%'";
+		}
+		
+		elseif($like['pos'] == 'none'){
+			return " '{$like['val']}'";
+		}
+	}
+	
 	private static function whereInVariation($com, $op, $where)
 	{
 		$_where = '';
@@ -129,7 +168,6 @@ class QueryCreator {
 			
 			if(!is_null(self::$limit) && !empty(self::$limit)){
 				self::$limit = 'LIMIT ' . self::$offset . ',' . str_replace('LIMIT ','',self::$limit);
-				
 			}
 		}
 	}
@@ -164,12 +202,8 @@ class QueryCreator {
 	{
 		switch($type){
 			case "get";
-				$orWhere = self::whereRegulator('or_where', self::$or_where);
-				$whereIn = self::whereRegulator('where_in', self::$where_in);
-				$orWhereIn = self::whereRegulator('or_where_in', self::$or_where_in);
-				$whereNotIn = self::whereRegulator('where_not_in', self::$where_not_in);
-				$orWhereNotIn = self::whereRegulator('or_where_not_in', self::$or_where_not_in);
-				$query =  self::$select . ' ' . self::$from . ' ' . 'WHERE ' . self::$where . $orWhere . $whereIn . $orWhereIn . $whereNotIn . $orWhereNotIn . ' ' . self::$limit;
+				$query =  self::$select . ' ' . self::$from . ' ' . 'WHERE ' . self::$where . self::$or_where . ' AND ' . self::$where_in . ' OR ' . self::$or_where_in . ' AND ' . self::$where_not_in . ' OR ' . self::$or_where_not_in . self::$like . ' ' . self::$limit;
+				$query = self::whereRegulator($query);
 				break;
 		}
 		
@@ -179,31 +213,15 @@ class QueryCreator {
 		
 	}
 	
-	protected static function whereRegulator($type = false, $where = false)
+	protected static function whereRegulator($query)
 	{
-		if($type && $where){
-			if($type == 'or_where' && (empty(self::$where) && preg_match('/OR (.*?)/',$where) > 0)){
-				return $or_where = substr($where,4);
-			}
-			
-			elseif($type == 'where_in' && (!empty(self::$where) || !empty(self::$or_where))){
-				return ' AND ' . $where;
-			}
-
-			elseif($type == 'or_where_in' && (!empty(self::$where) || !empty(self::$or_where) || !empty(self::$where_in))){
-				return ' OR ' . $where;
-			}
-
-			elseif($type == 'where_not_in' && (!empty(self::$where) || !empty(self::$or_where) || !empty(self::$where_in) || !empty(self::$or_where_in))){
-				return ' AND ' . $where;
-			}
-			
-			elseif($type == 'or_where_not_in' && (!empty(self::$where) || !empty(self::$or_where) || !empty(self::$where_in) || !empty(self::$or_where_in) || !empty(self::$where_not_in))){
-				return ' OR ' . $where;
+		foreach(array('AND','OR') as $op){
+			if(preg_match('/WHERE(\s+)' . preg_quote($op) . '/', $query) > 0){
+				return preg_replace('/WHERE(\s+)' . preg_quote($op) . '/', 'WHERE ', $query);
 			}
 		}
 		
-		return $where;
+		return $query;
 	}
 	
 	protected static function emptySqlVars()
@@ -215,6 +233,7 @@ class QueryCreator {
 		self::$where_not_in = '';
 		self::$or_where_not_in = '';
 		self::$or_where_in = '';
+		self::$like = '';
 		self::$from = '';
 		self::$limit = '';
 		self::$offset = '';
