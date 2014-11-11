@@ -37,6 +37,7 @@ class Mysql implements MysqlInterface {
 	protected static $Queries = array();
 	protected static $dbClosed = false;
 	
+	
 	public function __construct()
 	{
 		//	if(is_null(self::$dbLink)) self::init();
