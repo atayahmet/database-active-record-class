@@ -26,6 +26,7 @@ class Mysql implements MysqlInterface {
 	private static $order_by = array();
 	private static $having = array();
 	private static $or_having = array();
+	private static $join = array();
 	private static $limit = null;
 	private static $offset = null;
 	private static $distinct = '';
@@ -243,6 +244,19 @@ class Mysql implements MysqlInterface {
 		return new static;
 	}
 	
+	public function join($table = false, $compare = false, $type = 'inner')
+	{
+		preg_match('/(.*?)(\s+)(.*?)/',$table,$matches);
+		
+		if(count($matches) > 0){
+			$table = preg_replace('/' . $matches[0] . '/', self::dbprefix($matches[0]),$table);
+		}
+		
+		self::$join[] = array('table' => $table, 'compare' => $compare, 'type' => $type);
+		
+		return new static;
+	}
+	
 	public static function get($table = false)
 	{
 		if(is_null(self::$table)){
@@ -253,6 +267,7 @@ class Mysql implements MysqlInterface {
 						array(
 							'select',
 							'from' => 'table',
+							'join',
 							'where',
 							'or_where',
 							'where_in',
@@ -277,7 +292,7 @@ class Mysql implements MysqlInterface {
 		self::$query = QR::get($criterion);
 		
 		self::execute();
-		//var_dump(self::$query);
+		var_dump(self::$query);
 		return clone new static;
 	}
 	
@@ -290,6 +305,7 @@ class Mysql implements MysqlInterface {
 						array(
 							'select',
 							'from' => 'table',
+							'join',
 							'where',
 							'or_where',
 							'where_in',
@@ -300,6 +316,29 @@ class Mysql implements MysqlInterface {
 							'or_like',
 							'not_like',
 							'or_not_like'
+						)
+					);
+					
+		self::$query = QR::get($criterion);
+		self::execute();
+		
+		self::$query = "SELECT FOUND_ROWS() AS total";
+		self::execute();
+		
+		$result = self::row_array();
+		
+		return isset($result['total']) ? $result['total'] : 0;
+	}
+	
+	public static function count_all($table = false)
+	{
+		self::$select[] = 'SQL_CALC_FOUND_ROWS *';
+		self::$table = self::dbprefix($table);
+		
+		$criterion = self::getCriterion(
+						array(
+							'select',
+							'from' => 'table',
 						)
 					);
 					
@@ -470,6 +509,7 @@ class Mysql implements MysqlInterface {
 		self::$order_by = array();
 		self::$having = array();
 		self::$or_having = array();
+		self::$join = array();
 		self::$distinct = '';
 		self::$limit = '';
 		self::$offset = '';

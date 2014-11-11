@@ -27,4 +27,6 @@ Interface MysqlInterface
 	public static function result();
 	public static function result_array();
 	public static function count_all_results($table = false);
+	public static function count_all($table = false);
+	public function join($table = false, $compare = false, $type = 'inner join');
 }

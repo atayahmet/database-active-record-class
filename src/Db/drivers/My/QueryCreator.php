@@ -16,6 +16,7 @@ class QueryCreator {
 	protected static $limit = '';
 	protected static $having = '';
 	protected static $or_having = '';
+	protected static $join = '';
 	protected static $offset;
 	protected static $table;
 	protected static $from;
@@ -49,14 +50,16 @@ class QueryCreator {
 	
 	private static function where($_where)
 	{
-		foreach($_where as $w){
-			if(is_array($w)){
-				foreach($w as $f => $__w){
-					$fieldAndOp = self::checkOp($f);
-					self::$where .= empty(self::$where) ? "{$fieldAndOp} '{$__w}'" : " AND {$fieldAndOp} '{$__w}'";
+		if(count($_where) > 0){
+			foreach($_where as $w){
+				if(is_array($w)){
+					foreach($w as $f => $__w){
+						$fieldAndOp = self::checkOp($f);
+						self::$where .= empty(self::$where) ? "{$fieldAndOp} '{$__w}'" : " AND {$fieldAndOp} '{$__w}'";
+					}
+				}else{
+					self::$where .= empty(self::$where) ? $w : " AND {$w}";
 				}
-			}else{
-				self::$where .= empty(self::$where) ? $w : " AND {$w}";
 			}
 		}
 	}
@@ -147,6 +150,50 @@ class QueryCreator {
 		}
 		
 		return $likeTxt;
+	}
+	
+	private static function join($_join)
+	{
+		$joinTxt = '';
+		
+		if(count($_join) > 0){
+			foreach($_join as $j){
+				$joinTxt .= ' ' . self::joinType($j['type']) . ' ' . $j['table'] . ' ON(' . $j['compare'] . ')';
+			}
+		}
+		
+		self::$join = $joinTxt;
+	}
+	
+	private static function joinType($type = 'inner')
+	{
+		$joinTypes = array(
+						'inner join',
+						'cross join',
+						'left join',
+						'right join',
+						'left outer join' => 'left outer',
+						'right outer join' => 'right outer',
+						'inner',
+						'cross',
+						'left',
+						'right',
+						'left outer join' => 'outer'
+					);
+		
+		foreach($joinTypes as $k => $jt){
+			if(preg_match('/' . preg_quote($jt) . '/',strtolower($type)) > 0){
+				if(is_numeric($k)){
+					if(preg_match('/(.*?)(\s+)(.*?)/', $jt) > 0){
+						return strtoupper($jt);
+					}else{
+						return strtoupper($jt) . ' JOIN';
+					}
+				}else{
+					return strtoupper($k);
+				}
+			}
+		}
 	}
 	
 	private static function likePos($like)
@@ -311,7 +358,7 @@ class QueryCreator {
 	{
 		switch($type){
 			case "get";
-				$query =  'SELECT ' . self::$distinct . self::$select . ' ' . self::$from . ' ' . 'WHERE ' . self::$where . self::$or_where 
+				$query =  'SELECT ' . self::$distinct . self::$select . ' ' . self::$from . self::$join . ' ' . 'WHERE ' . self::$where . self::$or_where 
 						. self::$where_in . self::$or_where_in. self::$where_not_in
 						. self::$or_where_not_in . self::$like . self::$or_like . self::$not_like . self::$or_not_like 
 						. ' ' . self::$groupby . self::$having . self::$or_having . self::$orderby . self::$limit;
@@ -330,6 +377,11 @@ class QueryCreator {
 		foreach(array('AND','OR') as $op){
 			if(preg_match('/WHERE(\s+)' . preg_quote($op) . '/', $query) > 0){
 				$query = preg_replace('/WHERE(\s+)' . preg_quote($op) . '/', 'WHERE ', $query);
+				
+			}
+			
+			if(preg_match('/WHERE [a-zA-Z]/', $query) < 1){
+				$query = preg_replace('/WHERE/', '', $query);
 			}
 			
 			if(preg_match('/HAVING(\s+)' . preg_quote($op) . '/', $query) > 0){
@@ -362,5 +414,6 @@ class QueryCreator {
 		self::$distinct = '';
 		self::$having = '';
 		self::$or_having = '';
+		self::$join = '';
 	}
 }
