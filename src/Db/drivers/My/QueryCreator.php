@@ -81,42 +81,58 @@ class QueryCreator {
 	
 	private static function where_in($_where_in)
 	{
-		self::$where_in = self::whereInVariation('IN','AND',$_where_in);
+		if(count($_where_in) > 0){
+			self::$where_in = ' AND ' . self::whereInVariation('IN','AND',$_where_in);
+		}
 	}
 	
-	private static function or_where_in($_where_in)
+	private static function or_where_in($_or_where_in)
 	{
-		self::$or_where_in = self::whereInVariation('IN','OR',$_where_in);
+		if(count($_or_where_in) > 0){
+			self::$or_where_in = ' OR ' . self::whereInVariation('IN','OR',$_or_where_in);
+		}
 	}
 	
 	private static function where_not_in($_where_not_in)
 	{
-		self::$where_not_in = self::whereInVariation('NOT IN','AND',$_where_not_in);
+		if(count($_where_not_in) > 0){
+			self::$where_not_in = ' AND ' . self::whereInVariation('NOT IN','AND',$_where_not_in);
+		}
 	}
 	
 	private static function or_where_not_in($_or_where_not_in)
 	{
-		self::$or_where_not_in = self::whereInVariation('NOT IN','OR',$_or_where_not_in);
+		if(count($_or_where_not_in) > 0){
+			self::$or_where_not_in = ' OR ' . self::whereInVariation('NOT IN','OR',$_or_where_not_in);
+		}
 	}
 	
 	private static function like($_like)
 	{
-		self::$like = self::likeVariation('LIKE', 'AND', $_like);
+		if(count($_like) > 0){
+			self::$like = self::likeVariation('LIKE', 'AND', $_like);
+		}
 	}
 	
 	private static function or_like($_or_like)
 	{
-		self::$or_like = self::likeVariation('LIKE', 'OR', $_or_like);
+		if(count($_or_like) > 0){
+			self::$or_like = self::likeVariation('LIKE', 'OR', $_or_like);
+		}
 	}
 	
 	private static function not_like($_not_like)
 	{
-		self::$not_like = self::likeVariation('NOT LIKE', 'AND', $_not_like);
+		if(count($_not_like) > 0){
+			self::$not_like = self::likeVariation('NOT LIKE', 'AND', $_not_like);
+		}
 	}
 	
-	private static function or_not_like($_not_like)
+	private static function or_not_like($_or_not_like)
 	{
-		self::$or_not_like = self::likeVariation('NOT LIKE', 'OR', $_not_like);
+		if(count($_or_not_like) > 0){
+			self::$or_not_like = self::likeVariation('NOT LIKE', 'OR', $_or_not_like);
+		}
 	}
 	
 	private static function likeVariation($compare, $operator, $_like)
@@ -208,22 +224,24 @@ class QueryCreator {
 	
 	private static function order_by($_orderby)
 	{
-		$orderTxt = '';
-		$rand = false;
-		
-		foreach($_orderby as $o){
-			$field = key($o);
-			$order = current($o);
+		if(count($_orderby) > 0){
+			$orderTxt = '';
+			$rand = false;
 			
-			if($order != 'random' && (strtolower($order) == 'asc' || strtolower($order) == 'desc')){
-				$o = $field . ' ' . strtoupper($order);
-				$orderTxt .= !empty($orderTxt) ? ',' . $o : $o;
-			}else{
-				$rand = true;
+			foreach($_orderby as $o){
+				$field = key($o);
+				$order = current($o);
+				
+				if($order != 'random' && (strtolower($order) == 'asc' || strtolower($order) == 'desc')){
+					$o = $field . ' ' . strtoupper($order);
+					$orderTxt .= !empty($orderTxt) ? ',' . $o : $o;
+				}else{
+					$rand = true;
+				}
 			}
+			
+			self::$orderby = ' ORDER BY ' . (!$rand ? $orderTxt : 'RAND()');
 		}
-		
-		self::$orderby = ' ORDER BY ' . (!$rand ? $orderTxt : 'RAND()');
 	}
 	
 	private static function distinct($_distinct)
@@ -233,12 +251,16 @@ class QueryCreator {
 	
 	private static function having($_having)
 	{
-		self::$having = self::havingVariation('AND', $_having);
+		if(count($_having)){
+			self::$having = ' HAVING ' . self::havingVariation('AND', $_having);
+		}
 	}
 	
 	private static function or_having($_or_having)
 	{
-		self::$or_having = self::havingVariation('OR', $_or_having);
+		if(count($_or_having)){
+			self::$or_having = self::havingVariation('OR', $_or_having);
+		}
 	}
 	
 	private static function havingVariation($op, $_having)
@@ -290,9 +312,9 @@ class QueryCreator {
 		switch($type){
 			case "get";
 				$query =  'SELECT ' . self::$distinct . self::$select . ' ' . self::$from . ' ' . 'WHERE ' . self::$where . self::$or_where 
-						. ' AND ' . self::$where_in . ' OR ' . self::$or_where_in . ' AND ' 
-						. self::$where_not_in . ' OR ' . self::$or_where_not_in . self::$like . self::$or_like . self::$not_like . self::$or_not_like 
-						. ' ' . self::$groupby . ' HAVING ' . self::$having . self::$or_having . self::$orderby . self::$limit;
+						. self::$where_in . self::$or_where_in. self::$where_not_in
+						. self::$or_where_not_in . self::$like . self::$or_like . self::$not_like . self::$or_not_like 
+						. ' ' . self::$groupby . self::$having . self::$or_having . self::$orderby . self::$limit;
 				$query = self::sqlRegulator($query);
 				break;
 		}

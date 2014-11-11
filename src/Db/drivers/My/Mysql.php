@@ -22,8 +22,8 @@ class Mysql implements MysqlInterface {
 	private static $or_like = array();
 	private static $not_like = array();
 	private static $or_not_like = array();
-	private static $groupby = array();
-	private static $orderby = array();
+	private static $group_by = array();
+	private static $order_by = array();
 	private static $having = array();
 	private static $or_having = array();
 	private static $limit = null;
@@ -36,7 +36,6 @@ class Mysql implements MysqlInterface {
 	protected static $dbErr;
 	protected static $Queries = array();
 	protected static $dbClosed = false;
-	
 	
 	public function __construct()
 	{
@@ -161,10 +160,10 @@ class Mysql implements MysqlInterface {
 		if($field){
 			if(is_array($field)){
 				foreach($field as $f){
-					self::$groupby[] = $f;
+					self::$group_by[] = $f;
 				}
 			}else{
-				self::$groupby[] = $field;
+				self::$group_by[] = $field;
 			}
 		}
 		
@@ -213,7 +212,7 @@ class Mysql implements MysqlInterface {
 		$args = func_get_args();
 		
 		if(count($args) == 2){
-			self::$orderby[] = array($args[0] => $args[1]);
+			self::$order_by[] = array($args[0] => $args[1]);
 		}
 		
 		return new static;
@@ -247,41 +246,92 @@ class Mysql implements MysqlInterface {
 	public static function get($table = false)
 	{
 		if(is_null(self::$table)){
-			self::$table = $table;
+			self::$table = self::dbprefix($table);
 		}
 		
-		self::$query = QR::get(
-			array(
-				'select' => self::$select,
-				'from' => self::dbprefix(self::$table),
-				'where' => self::$where,
-				'or_where' => self::$or_where,
-				'where_in' => self::$where_in,
-				'or_where_in' => self::$or_where_in,
-				'where_not_in' => self::$where_not_in,
-				'or_where_not_in' => self::$or_where_not_in,
-				'like' => self::$like,
-				'or_like' => self::$or_like,
-				'not_like' => self::$not_like,
-				'or_not_like' => self::$or_not_like,
-				'limit' => self::$limit,
-				'offset' => self::$offset,
-				'group_by' => self::$groupby,
-				'order_by' => self::$orderby,
-				'distinct' => self::$distinct,
-				'having' => self::$having,
-				'or_having' => self::$or_having
-			)
-		);
+		$criterion = self::getCriterion(
+						array(
+							'select',
+							'from' => 'table',
+							'where',
+							'or_where',
+							'where_in',
+							'or_where_in',
+							'where_not_in',
+							'or_where_not_in',
+							'like',
+							'or_like',
+							'not_like',
+							'or_not_like',
+							'limit',
+							'offset',
+							'group_by',
+							'order_by',
+							'distinct',
+							'having',
+							'or_having'
+						)
+					);
+				
+		
+		self::$query = QR::get($criterion);
 		
 		self::execute();
-		var_dump(self::$query);
+		//var_dump(self::$query);
 		return clone new static;
 	}
 	
 	public static function count_all_results($table = false)
 	{
+		self::$select[] = 'SQL_CALC_FOUND_ROWS *';
+		self::$table = self::dbprefix(!$table ? self::$table : $table);
 		
+		$criterion = self::getCriterion(
+						array(
+							'select',
+							'from' => 'table',
+							'where',
+							'or_where',
+							'where_in',
+							'or_where_in',
+							'where_not_in',
+							'or_where_not_in',
+							'like',
+							'or_like',
+							'not_like',
+							'or_not_like'
+						)
+					);
+					
+		self::$query = QR::get($criterion);
+		self::execute();
+		
+		self::$query = "SELECT FOUND_ROWS() AS total";
+		self::execute();
+		
+		$result = self::row_array();
+		
+		return isset($result['total']) ? $result['total'] : 0;
+	}
+	
+	private static function getCriterion($_criterion)
+	{
+		$criterion = array();
+		
+		if(is_array($_criterion)){
+			foreach($_criterion as $k => $c){
+				
+				if(isset(self::$$c) || is_null(self::$$c)){
+					$criterion[(!is_numeric($k) ? $k : $c)] = self::$$c;
+				}
+			}
+		}else{
+			if(isset(self::$$_criterion) || is_null(self::$$_criterion)){
+				$criterion[$_criterion] = self::$$_criterion;
+			}
+		}
+		
+		return $criterion;
 	}
 	
 	protected static function execute()
@@ -416,8 +466,8 @@ class Mysql implements MysqlInterface {
 		self::$or_like = array();
 		self::$not_like = array();
 		self::$or_not_like = array();
-		self::$groupby = array();
-		self::$orderby = array();
+		self::$group_by = array();
+		self::$order_by = array();
 		self::$having = array();
 		self::$or_having = array();
 		self::$distinct = '';
