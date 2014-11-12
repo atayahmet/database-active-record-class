@@ -384,6 +384,13 @@ class QueryCreator {
 		return self::returnSql(__FUNCTION__);
 	}
 	
+	public static function insert($parm)
+	{
+		self::$table = $parm['insert']['table'];
+		exit(var_dump(array_flip(array('flag' => 's','id' => 'xxx'))));
+		return self::returnSql(__FUNCTION__);
+	}
+	
 	private static function checkOp($op)
 	{
 		$oprs = array('!=','<>','<=','>=','<','>','=');
@@ -409,6 +416,9 @@ class QueryCreator {
 						. "\n" . self::$groupby . self::$having . self::$or_having . self::$orderby . self::$limit;
 				
 				$query = self::sqlRegulator($query);
+				break;
+				
+			case "insert";
 				break;
 		}
 		

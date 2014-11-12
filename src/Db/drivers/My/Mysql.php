@@ -37,12 +37,18 @@ class Mysql implements MysqlInterface {
 	private static $distinct = '';
 	private static $table;
 	private static $insert = array();
+	private static $set = array();
 	
 	protected static $query;
 	protected static $qResult;
 	protected static $dbErr;
 	protected static $Queries = array();
 	protected static $dbClosed = false;
+	
+	protected static $dbErrMsg = array(
+		'incorrect_parm' => 'Incorrect parameter',
+		'table_name' => 'Table name not found'
+	);
 	
 	public function __construct()
 	{
@@ -377,18 +383,54 @@ class Mysql implements MysqlInterface {
 	
 	public static function insert($table = false, $data = false)
 	{
-		if($table){
-			self::$table = self::dbprefix($table);
-			
-			try{
-				if(is_array($data) && count($data) > 0){
-					self::$insert = $data;
+		try {
+			if($table){
+				if($data && !is_array($data)){
+					$excParm = array('p' => $data);
+					self::$dbErr = self::$dbErrMsg['incorrect_parm'];
+					throw new ErrorCatcher(self::$dbErr);
+				}else{
+					self::$table = self::dbprefix($table);
+					
+					if($data){
+						self::$insert = array('table' => self::$table, 'data' => $data);
+					}
+					
+					if(count(self::$set) > 0){
+						if(count(self::$insert) > 0){
+							foreach(self::$set as $field => $val){
+								self::$insert['data'][$field] = $val;
+							}
+						}else{
+							self::$insert = array('table' => self::$table, 'data' => self::$set);
+						}
+					}
+					
+					$criterion = self::getCriterion(array('insert'));
+					self::$query = QR::insert($criterion);
+					self::execute();
 				}
-			    throw new ErrorCatcher('Division by zero.');
-			}catch (ErrorCatcher $e) {
-				echo(ErrorCatcher::fire(array('e' => $e, 'q' => 'SELECT sdgfsdfsdfs')));
+			}else{
+				$excParm = array('q' => 'sdfsdfsdf sdf sd fsd fsd');
+				self::$dbErr = self::$dbErrMsg['table_name'];
+				throw new ErrorCatcher(self::$dbErr);
 			}
+		}catch (ErrorCatcher $e) {
+			$excParm['e'] = $e;
+			echo(ErrorCatcher::fire($excParm));
 		}
+		
+	}
+	
+	public static function set()
+	{
+		$args = func_get_args();
+		
+		if(count($args) == 2 && !is_array($args[1])){
+			self::$set[$args[0]] = $args[1];
+		}
+		
+		return new static;
 	}
 	
 	public static function count_all_results($table = false)
@@ -470,28 +512,37 @@ class Mysql implements MysqlInterface {
 	
 	protected static function execute()
 	{
-		self::$dbLink = mysql_connect(self::$dbconf['hostname'], self::$dbconf['username'], self::$dbconf['password']);
+		try {
+			self::$dbLink = mysql_connect(self::$dbconf['hostname'], self::$dbconf['username'], self::$dbconf['password']);
 		
-		if(!self::$dbLink){
-			self::$dbErr = 'Check database connections info';
+			if(!self::$dbLink){
+				self::$dbErr = 'Check database connections info';
+				
+				throw new ErrorCatcher(self::$dbErr);
+			}
+			
+			mysql_select_db(self::$dbconf['database'], self::$dbLink);
+			mysql_set_charset('utf8',self::$dbLink); 
+			
+			
+			self::$Queries[md5(self::$query)]['query'] = self::$query;
+			
+			$start = microtime();
+			self::$qResult = mysql_query(self::$query);
+			$stop = microtime();
+			
+			self::$Queries[md5(self::$query)]['duration'] = number_format($stop - $start,4,',','.');
+			
+			if(!self::$qResult){
+				self::$dbErr = mysql_error();
+				
+				throw new ErrorCatcher(self::$dbErr);
+			}
+		    
+		}catch (ErrorCatcher $e) {
+			echo(ErrorCatcher::fire(array('e' => $e, 'q' => self::$query)));
 		}
-		
-		mysql_select_db(self::$dbconf['database'], self::$dbLink);
-		mysql_set_charset('utf8',self::$dbLink); 
-		
-		
-		self::$Queries[md5(self::$query)]['query'] = self::$query;
-		
-		$start = microtime();
-		self::$qResult = mysql_query(self::$query);
-		$stop = microtime();
-		
-		self::$Queries[md5(self::$query)]['duration'] = number_format($stop - $start,4,',','.');
-		
-		if(!self::$qResult){
-			self::$dbErr = mysql_error();
-		}
-		
+			
 		self::emptySqlVars();
 	}
 	
@@ -610,6 +661,7 @@ class Mysql implements MysqlInterface {
 		self::$or_having = array();
 		self::$join = array();
 		self::$insert = array();
+		self::$set = array();
 		self::$distinct = '';
 		self::$limit = '';
 		self::$offset = '';
