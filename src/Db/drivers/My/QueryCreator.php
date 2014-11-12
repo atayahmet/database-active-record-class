@@ -3,6 +3,10 @@
 class QueryCreator {
 	protected static $db;
 	protected static $select = '';
+	protected static $select_max = '';
+	protected static $select_min = '';
+	protected static $select_avg = '';
+	protected static $select_sum = '';
 	protected static $where = '';
 	protected static $or_where = '';
 	protected static $where_in = '';
@@ -41,6 +45,47 @@ class QueryCreator {
 		}
 		
 		self::$select = self::$select;
+	}
+	
+	private static function selectVariation($field, $func)
+	{
+		if($field){
+			self::select(array("\n{$func}(" . $field . ") as " . $field));
+			
+			preg_match('/' . preg_quote($func) . '\((.*?)\)(\s+)as(\s+)(.*?)/', self::$select,$matches);
+			
+			if(count($matches) > 1){
+				self::$select = $matches[0] . $matches[1];
+			}
+		}
+	}
+	
+	private static function select_max($field = false)
+	{
+		if($field){
+			self::selectVariation($field, 'MAX');
+		}
+	}
+	
+	private static function select_min($field = false)
+	{
+		if($field){
+			self::selectVariation($field, 'MIN');
+		}
+	}
+	
+	private static function select_avg($field = false)
+	{
+		if($field){
+			self::selectVariation($field, 'AVG');
+		}
+	}
+	
+	private static function select_sum($field = false)
+	{
+		if($field){
+			self::selectVariation($field, 'SUM');
+		}
 	}
 	
 	private static function from($table)
@@ -358,10 +403,11 @@ class QueryCreator {
 	{
 		switch($type){
 			case "get";
-				$query =  'SELECT ' . self::$distinct . self::$select . ' ' . self::$from . self::$join . ' ' . 'WHERE ' . self::$where . self::$or_where 
+				$query =  "SELECT\n" . self::$distinct . self::$select . ' ' . self::$from . self::$join . "\n" . 'WHERE ' . self::$where . self::$or_where 
 						. self::$where_in . self::$or_where_in. self::$where_not_in
 						. self::$or_where_not_in . self::$like . self::$or_like . self::$not_like . self::$or_not_like 
-						. ' ' . self::$groupby . self::$having . self::$or_having . self::$orderby . self::$limit;
+						. "\n" . self::$groupby . self::$having . self::$or_having . self::$orderby . self::$limit;
+				
 				$query = self::sqlRegulator($query);
 				break;
 		}
@@ -389,12 +435,16 @@ class QueryCreator {
 			}
 		}
 		
-		return $query;
+		return preg_replace('/(\s+)/', ' ',$query);
 	}
 	
 	protected static function emptySqlVars()
 	{
 		self::$select = '';
+		self::$select_max = '';
+		self::$select_min = '';
+		self::$select_avg = '';
+		self::$select_sum = '';
 		self::$where = '';
 		self::$or_where = '';
 		self::$where_in = '';

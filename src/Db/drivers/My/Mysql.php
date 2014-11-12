@@ -4,6 +4,7 @@ namespace Db\drivers\My;
 
 use Db\drivers\My\MysqlInterface;
 use Db\drivers\My\QueryCreator as QR;
+use Db\DbException as ErrorCatcher;
 
 class Mysql implements MysqlInterface {
 	
@@ -12,6 +13,10 @@ class Mysql implements MysqlInterface {
 	private static $dbLink = null;
 	
 	private static $select = array();
+	private static $select_max = '';
+	private static $select_min = '';
+	private static $select_avg = '';
+	private static $select_sum = '';
 	private static $where = array();
 	private static $or_where = array();
 	private static $where_in = array();
@@ -31,6 +36,7 @@ class Mysql implements MysqlInterface {
 	private static $offset = null;
 	private static $distinct = '';
 	private static $table;
+	private static $insert = array();
 	
 	protected static $query;
 	protected static $qResult;
@@ -46,6 +52,42 @@ class Mysql implements MysqlInterface {
 	public static function select($_select = null)
 	{
 		self::$select[] = $_select;
+		
+		return new static;
+	}
+	
+	public static function select_max($field = false)
+	{
+		if($field){
+			self::$select_max = $field;
+		}
+		
+		return new static;
+	}
+	
+	public static function select_min($field = false)
+	{
+		if($field){
+			self::$select_min = $field;
+		}
+		
+		return new static;
+	}
+	
+	public static function select_avg($field = false)
+	{
+		if($field){
+			self::$select_avg = $field;
+		}
+		
+		return new static;
+	}
+	
+	public static function select_sum($field = false)
+	{
+		if($field){
+			self::$select_sum = $field;
+		}
 		
 		return new static;
 	}
@@ -244,7 +286,7 @@ class Mysql implements MysqlInterface {
 		return new static;
 	}
 	
-	public function join($table = false, $compare = false, $type = 'inner')
+	public static function join($table = false, $compare = false, $type = 'inner')
 	{
 		preg_match('/(.*?)(\s+)(.*?)/',$table,$matches);
 		
@@ -263,9 +305,14 @@ class Mysql implements MysqlInterface {
 			self::$table = self::dbprefix($table);
 		}
 		
+		//Exception::test();
 		$criterion = self::getCriterion(
 						array(
 							'select',
+							'select_max',
+							'select_min',
+							'select_avg',
+							'select_sum',
 							'from' => 'table',
 							'join',
 							'where',
@@ -290,10 +337,58 @@ class Mysql implements MysqlInterface {
 				
 		
 		self::$query = QR::get($criterion);
-		
 		self::execute();
 		var_dump(self::$query);
 		return clone new static;
+	}
+
+	public static function get_where($table = false, $where = false, $limit = false, $offset = false)
+	{
+		if($table){
+			self::$table = self::dbprefix($table);
+			
+			self::where($where);
+			
+			if($limit){
+				self::limit($limit);
+			}
+			
+			if($offset){
+				self::offset($offset);
+			}
+			
+			
+			$criterion = self::getCriterion(
+						array(
+							'select',
+							'from' => 'table',
+							'where',
+							'limit',
+							'offset',
+						)
+					);
+					
+			self::$query = QR::get($criterion);
+			self::execute();
+			
+			return clone new static;
+		}
+	}
+	
+	public static function insert($table = false, $data = false)
+	{
+		if($table){
+			self::$table = self::dbprefix($table);
+			
+			try{
+				if(is_array($data) && count($data) > 0){
+					self::$insert = $data;
+				}
+			    throw new ErrorCatcher('Division by zero.');
+			}catch (ErrorCatcher $e) {
+				echo(ErrorCatcher::fire(array('e' => $e, 'q' => 'SELECT sdgfsdfsdfs')));
+			}
+		}
 	}
 	
 	public static function count_all_results($table = false)
@@ -495,6 +590,10 @@ class Mysql implements MysqlInterface {
 	protected static function emptySqlVars()
 	{
 		self::$select = array();
+		self::$select_max = '';
+		self::$select_min = '';
+		self::$select_avg = '';
+		self::$select_sum = '';
 		self::$where = array();
 		self::$or_where = array();
 		self::$where_in = array();
@@ -510,6 +609,7 @@ class Mysql implements MysqlInterface {
 		self::$having = array();
 		self::$or_having = array();
 		self::$join = array();
+		self::$insert = array();
 		self::$distinct = '';
 		self::$limit = '';
 		self::$offset = '';

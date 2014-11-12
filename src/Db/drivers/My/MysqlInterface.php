@@ -3,6 +3,10 @@
 Interface MysqlInterface
 {
     public static function select($_select = null);
+	public static function select_max($field = false);
+	public static function select_min($field = false);
+	public static function select_avg($field = false);
+	public static function select_sum($field = false);
     public static function where($_where = null);
 	public static function where_in();
 	public static function or_where_in();
@@ -28,5 +32,6 @@ Interface MysqlInterface
 	public static function result_array();
 	public static function count_all_results($table = false);
 	public static function count_all($table = false);
-	public function join($table = false, $compare = false, $type = 'inner join');
+	public static function join($table = false, $compare = false, $type = 'inner join');
+	public static function get_where($table = false, $where = false, $limit = false, $offset = false);
 }
