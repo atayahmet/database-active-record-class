@@ -34,4 +34,9 @@ Interface MysqlInterface
 	public static function count_all($table = false);
 	public static function join($table = false, $compare = false, $type = 'inner join');
 	public static function get_where($table = false, $where = false, $limit = false, $offset = false);
+	public static function insert($table = false, $data = false);
+	public static function insert_batch($table = false, $data = false);
+	public static function set();
+	public static function insert_id();
+	public static function query($sql = null);
 }

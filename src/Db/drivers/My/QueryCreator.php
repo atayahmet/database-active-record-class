@@ -21,6 +21,7 @@ class QueryCreator {
 	protected static $having = '';
 	protected static $or_having = '';
 	protected static $join = '';
+	protected static $insert = array();
 	protected static $offset;
 	protected static $table;
 	protected static $from;
@@ -387,8 +388,23 @@ class QueryCreator {
 	public static function insert($parm)
 	{
 		self::$table = $parm['insert']['table'];
-		exit(var_dump(array_flip(array('flag' => 's','id' => 'xxx'))));
+		$fields = implode(array_flip($parm['insert']['data']),',');
+		$values = self::convertInsertData($parm['insert']['data']);
+		
+		self::$insert = array('fields' => $fields, 'value' => $values);
+		
 		return self::returnSql(__FUNCTION__);
+	}
+	
+	private static function convertInsertData($data = false)
+	{
+		if(is_array($data)){
+			return "'" . preg_replace_callback("/(.*?),/",function($matches){
+				return preg_replace('/,(.*?)/', "$1',", $matches[0]."'");
+			},implode($data, ',')) . "'";
+		}
+		
+		return '';
 	}
 	
 	private static function checkOp($op)
@@ -414,14 +430,17 @@ class QueryCreator {
 						. self::$where_in . self::$or_where_in. self::$where_not_in
 						. self::$or_where_not_in . self::$like . self::$or_like . self::$not_like . self::$or_not_like 
 						. "\n" . self::$groupby . self::$having . self::$or_having . self::$orderby . self::$limit;
-				
-				$query = self::sqlRegulator($query);
+
 				break;
 				
 			case "insert";
+				if(is_array(self::$insert)){
+					$query = "INSERT INTO " . self::$table . "(" . self::$insert['fields'] . ") VALUES(" . self::$insert['value'] . ")";
+				}
 				break;
 		}
 		
+		$query = self::sqlRegulator($query);
 		self::emptySqlVars();
 		
 		return $query;
@@ -474,6 +493,7 @@ class QueryCreator {
 		self::$distinct = '';
 		self::$having = '';
 		self::$or_having = '';
+		self::$insert = array();
 		self::$join = '';
 	}
 }

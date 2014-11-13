@@ -37,6 +37,7 @@ class Mysql implements MysqlInterface {
 	private static $distinct = '';
 	private static $table;
 	private static $insert = array();
+	private static $insert_id = null;
 	private static $set = array();
 	
 	protected static $query;
@@ -381,15 +382,26 @@ class Mysql implements MysqlInterface {
 		}
 	}
 	
+	private static function insertVariation()
+	{
+		
+	}
+	
 	public static function insert($table = false, $data = false)
 	{
 		try {
 			if($table){
-				if($data && !is_array($data)){
+				$isObject = is_object($data);
+				
+				if($data && !is_array($data) && !$isObject){
 					$excParm = array('p' => $data);
 					self::$dbErr = self::$dbErrMsg['incorrect_parm'];
 					throw new ErrorCatcher(self::$dbErr);
 				}else{
+					if($isObject){
+						$data = get_object_vars($data);
+					}
+					
 					self::$table = self::dbprefix($table);
 					
 					if($data){
@@ -411,7 +423,6 @@ class Mysql implements MysqlInterface {
 					self::execute();
 				}
 			}else{
-				$excParm = array('q' => 'sdfsdfsdf sdf sd fsd fsd');
 				self::$dbErr = self::$dbErrMsg['table_name'];
 				throw new ErrorCatcher(self::$dbErr);
 			}
@@ -420,6 +431,35 @@ class Mysql implements MysqlInterface {
 			echo(ErrorCatcher::fire($excParm));
 		}
 		
+	}
+	
+	public static function insert_batch($table = false, $data = false)
+	{
+		try{
+			if($table){
+				if($data && !is_array($data)){
+					$excParm = array('p' => $data);
+					self::$dbErr = self::$dbErrMsg['incorrect_parm'];
+					throw new ErrorCatcher(self::$dbErr);
+				}else{
+					
+				}
+			}else{
+				self::$dbErr = self::$dbErrMsg['table_name'];
+				throw new ErrorCatcher(self::$dbErr);
+			}
+		}catch (ErrorCatcher $e){
+			$excParm['e'] = $e;
+			echo(ErrorCatcher::fire($excParm));
+		}
+	}
+	
+	public static function query($sql = null)
+	{
+		self::$query = $sql;
+		self::execute();
+		
+		return new static;
 	}
 	
 	public static function set()
@@ -431,6 +471,16 @@ class Mysql implements MysqlInterface {
 		}
 		
 		return new static;
+	}
+	
+	public static function insert_id()
+	{
+		self::$query = "SELECT LAST_INSERT_ID() as last_insert_id";
+		self::execute();
+		
+		$lastId = self::row()->last_insert_id;
+		
+		return $lastId == '0' ? null : $lastId;
 	}
 	
 	public static function count_all_results($table = false)
