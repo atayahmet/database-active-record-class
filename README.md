@@ -1,4 +1,6 @@
-codeigniter-external-db-driver
-==============================
+Database active record class
+===================
 
-the written of codeigniter database driver /super-object (get_instance) harmony problem with php 5.3 for
+> **Available fields:**
+
+> - This library completly  is written for composer package
