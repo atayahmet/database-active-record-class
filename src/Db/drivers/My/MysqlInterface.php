@@ -36,6 +36,8 @@ Interface MysqlInterface
 	public static function get_where($table = false, $where = false, $limit = false, $offset = false);
 	public static function insert($table = false, $data = false);
 	public static function insert_batch($table = false, $data = false);
+	public static function update($table = false, $data = false, $where = false);
+	public static function affected_rows();
 	public static function set();
 	public static function insert_id();
 	public static function query($sql = null);

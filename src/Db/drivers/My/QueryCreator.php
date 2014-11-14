@@ -22,9 +22,10 @@ class QueryCreator {
 	protected static $or_having = '';
 	protected static $join = '';
 	protected static $insert = array();
+	protected static $update = '';
 	protected static $offset;
-	protected static $table;
-	protected static $from;
+	protected static $table = '';
+	protected static $from = '';
 	protected static $groupby;
 	protected static $orderby;
 	protected static $distinct;
@@ -204,7 +205,7 @@ class QueryCreator {
 		
 		if(count($_join) > 0){
 			foreach($_join as $j){
-				$joinTxt .= ' ' . self::joinType($j['type']) . ' ' . $j['table'] . ' ON(' . $j['compare'] . ')';
+				$joinTxt .= ' ' . self::joinType($j['type']) . ' ' . $j['table'] . ' ON(' . $j['compare'] . ') ';
 			}
 		}
 		
@@ -389,11 +390,55 @@ class QueryCreator {
 	{
 		self::$table = $parm['insert']['table'];
 		$fields = implode(array_flip($parm['insert']['data']),',');
-		$values = self::convertInsertData($parm['insert']['data']);
+		$values = '(' . self::convertInsertData($parm['insert']['data']) . ')';
 		
 		self::$insert = array('fields' => $fields, 'value' => $values);
 		
 		return self::returnSql(__FUNCTION__);
+	}
+	
+	public static function insert_batch($parm)
+	{
+		if(count($parm['insert_batch']['data']) > 0){
+			self::$table = $parm['insert_batch']['table'];
+			
+			$values = array();
+			
+			foreach($parm['insert_batch']['data'] as $d){
+				$values[] = '('. self::convertInsertData($d) . ')';
+			}
+			
+			self::$insert = array('fields' => implode(array_flip($parm['insert_batch']['data'][0]),','), 'value' => implode($values,','));
+			
+			return self::returnSql('insert');
+		}
+	}
+	
+	public static function update($query)
+	{
+		foreach($query as $method => $q){
+			if(method_exists(new static, $method) && $method != __FUNCTION__){
+				self::$method($q);
+			}
+		}
+		
+		self::$table = $query['update']['table'];
+		self::$update = self::convertUpdateData($query['update']['data']);
+		
+		return self::returnSql(__FUNCTION__);
+	}
+	
+	private static function convertUpdateData($data = false)
+	{
+		if(is_array($data)){
+			$_set = array();
+			
+			foreach($data as $k => $d){
+				$_set[] = $k . '=' . "'{$d}'"; 
+			}
+			
+			return implode($_set, ',');
+		}
 	}
 	
 	private static function convertInsertData($data = false)
@@ -435,12 +480,19 @@ class QueryCreator {
 				
 			case "insert";
 				if(is_array(self::$insert)){
-					$query = "INSERT INTO " . self::$table . "(" . self::$insert['fields'] . ") VALUES(" . self::$insert['value'] . ")";
+					$query = "INSERT INTO " . self::$table . "(" . self::$insert['fields'] . ") VALUES" . self::$insert['value'];
 				}
+				break;
+				
+			case "update";
+				$query = "UPDATE " . self::$table . " SET " . self::$update . " WHERE " . self::$where . self::$or_where 
+						. self::$where_in . self::$or_where_in. self::$where_not_in. self::$or_where_not_in . self::$like 
+						. self::$or_like . self::$not_like . self::$or_not_like . self::$limit;
 				break;
 		}
 		
 		$query = self::sqlRegulator($query);
+		var_dump($query);
 		self::emptySqlVars();
 		
 		return $query;
@@ -452,10 +504,9 @@ class QueryCreator {
 		foreach(array('AND','OR') as $op){
 			if(preg_match('/WHERE(\s+)' . preg_quote($op) . '/', $query) > 0){
 				$query = preg_replace('/WHERE(\s+)' . preg_quote($op) . '/', 'WHERE ', $query);
-				
 			}
 			
-			if(preg_match('/WHERE [a-zA-Z]/', $query) < 1){
+			if(preg_match('/WHERE(\s+)[a-zA-Z]/', $query) < 1){
 				$query = preg_replace('/WHERE/', '', $query);
 			}
 			
@@ -494,6 +545,7 @@ class QueryCreator {
 		self::$having = '';
 		self::$or_having = '';
 		self::$insert = array();
+		self::$update = '';
 		self::$join = '';
 	}
 }

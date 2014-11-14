@@ -37,8 +37,10 @@ class Mysql implements MysqlInterface {
 	private static $distinct = '';
 	private static $table;
 	private static $insert = array();
+	private static $insert_batch = array();
 	private static $insert_id = null;
 	private static $set = array();
+	private static $update = array();
 	
 	protected static $query;
 	protected static $qResult;
@@ -308,7 +310,7 @@ class Mysql implements MysqlInterface {
 	
 	public static function get($table = false)
 	{
-		if(is_null(self::$table)){
+		if(empty(self::$table)){
 			self::$table = self::dbprefix($table);
 		}
 		
@@ -345,7 +347,7 @@ class Mysql implements MysqlInterface {
 		
 		self::$query = QR::get($criterion);
 		self::execute();
-		var_dump(self::$query);
+		//var_dump(self::$query);
 		return clone new static;
 	}
 
@@ -382,45 +384,17 @@ class Mysql implements MysqlInterface {
 		}
 	}
 	
-	private static function insertVariation()
-	{
-		
-	}
-	
-	public static function insert($table = false, $data = false)
+	private static function checkParameterType($table = false, $data = false)
 	{
 		try {
 			if($table){
-				$isObject = is_object($data);
-				
-				if($data && !is_array($data) && !$isObject){
+				if($data && !is_array($data) && !is_object($data)){
 					$excParm = array('p' => $data);
 					self::$dbErr = self::$dbErrMsg['incorrect_parm'];
 					throw new ErrorCatcher(self::$dbErr);
 				}else{
-					if($isObject){
-						$data = get_object_vars($data);
-					}
-					
 					self::$table = self::dbprefix($table);
-					
-					if($data){
-						self::$insert = array('table' => self::$table, 'data' => $data);
-					}
-					
-					if(count(self::$set) > 0){
-						if(count(self::$insert) > 0){
-							foreach(self::$set as $field => $val){
-								self::$insert['data'][$field] = $val;
-							}
-						}else{
-							self::$insert = array('table' => self::$table, 'data' => self::$set);
-						}
-					}
-					
-					$criterion = self::getCriterion(array('insert'));
-					self::$query = QR::insert($criterion);
-					self::execute();
+					return true;
 				}
 			}else{
 				self::$dbErr = self::$dbErrMsg['table_name'];
@@ -430,27 +404,79 @@ class Mysql implements MysqlInterface {
 			$excParm['e'] = $e;
 			echo(ErrorCatcher::fire($excParm));
 		}
-		
+	}
+	
+	public static function insert($table = false, $data = false)
+	{
+		if(self::checkParameterType($table, $data)){
+			if(is_object($data)){
+				$data = get_object_vars($data);
+			}
+			
+			if($data){
+				self::$insert = array('table' => self::$table, 'data' => $data);
+			}
+			
+			if(count(self::$set) > 0){
+				if(count(self::$insert) > 0){
+					foreach(self::$set as $field => $val){
+						self::$insert['data'][$field] = $val;
+					}
+				}else{
+					self::$insert = array('table' => self::$table, 'data' => self::$set);
+				}
+			}
+			
+			$criterion = self::getCriterion(array('insert'));
+			self::$query = QR::insert($criterion);
+			self::execute();
+		}
 	}
 	
 	public static function insert_batch($table = false, $data = false)
 	{
-		try{
-			if($table){
-				if($data && !is_array($data)){
-					$excParm = array('p' => $data);
-					self::$dbErr = self::$dbErrMsg['incorrect_parm'];
-					throw new ErrorCatcher(self::$dbErr);
-				}else{
-					
-				}
-			}else{
-				self::$dbErr = self::$dbErrMsg['table_name'];
-				throw new ErrorCatcher(self::$dbErr);
+		if(self::checkParameterType($table, $data)){
+			if($data){
+				self::$insert_batch = array('table' => self::$table, 'data' => $data);
+				$criterion = self::getCriterion(array('insert_batch'));
+				self::$query = QR::insert_batch($criterion);
+				self::execute();
 			}
-		}catch (ErrorCatcher $e){
-			$excParm['e'] = $e;
-			echo(ErrorCatcher::fire($excParm));
+		}
+	}
+	
+	public static function update($table = false, $data = false, $where = false)
+	{
+		if(self::checkParameterType($table, $data)){
+			if($where){
+				self::$where[] = $where;
+			}
+			
+			if(is_object($data)){
+				$data = get_object_vars($data);
+			}
+			
+			self::$update = array('table' => self::$table, 'data' => $data);
+			$criterion = self::getCriterion(
+				array(
+					'update',
+					'table',
+					'where',
+					'or_where',
+					'where_in',
+					'or_where_in',
+					'where_not_in',
+					'or_where_not_in',
+					'like',
+					'or_like',
+					'not_like',
+					'or_not_like',
+					'limit'
+				)
+			);
+			
+			self::$query = QR::update($criterion);
+			self::execute();
 		}
 	}
 	
@@ -468,6 +494,10 @@ class Mysql implements MysqlInterface {
 		
 		if(count($args) == 2 && !is_array($args[1])){
 			self::$set[$args[0]] = $args[1];
+		}
+		
+		elseif(is_object($args[0])){
+			self::$set = array_merge(self::$set,get_object_vars($args[0]));
 		}
 		
 		return new static;
@@ -683,6 +713,11 @@ class Mysql implements MysqlInterface {
 		}
 	}
 	
+	public static function affected_rows()
+	{
+		return mysql_affected_rows();
+	}
+	
 	public static function init(&$config)
 	{
 		self::$dbconf = $config;
@@ -711,7 +746,9 @@ class Mysql implements MysqlInterface {
 		self::$or_having = array();
 		self::$join = array();
 		self::$insert = array();
+		self::$insert_batch = array();
 		self::$set = array();
+		self::$update = array();
 		self::$distinct = '';
 		self::$limit = '';
 		self::$offset = '';
