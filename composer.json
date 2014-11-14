@@ -1,5 +1,5 @@
 {
-    "name": "atayahmet/Database-active-record-class",
+    "name": "atayahmet/database-active-record-class",
     "type": "library",
     "description": "the written of codeigniter database driver /super-object (get_instance) harmony problem with php 5.3 for",
     "keywords": ["external-db", "codeigniter", "php-5.3"],
