@@ -23,6 +23,7 @@ class QueryCreator {
 	protected static $join = '';
 	protected static $insert = array();
 	protected static $update = '';
+	protected static $update_batch = '';
 	protected static $offset;
 	protected static $table = '';
 	protected static $from = '';
@@ -264,27 +265,28 @@ class QueryCreator {
 	
 	private static function whereInVariation($com, $op, $where)
 	{
-		$_where = '';
+		$whereStr = '';
 		
 		if(is_array($where)){
-			foreach($where as $w){
-				foreach($w as $f => $__w){
-					$_in = '';
+			foreach ($where as $_where) {
+				foreach($_where as $f => $w){
+					$in = array();
 					
-					if(is_array($__w)){
-						foreach($__w as $w_){
-							$_in .= (empty($_in) ? "'$w_'" : ",'$w_'");
+					if(is_array($w)){
+						foreach($w as $w_){
+							$in[] = "'{$w_}'";
 						}
 					}else{
-						$_in = (empty($_in) ? "'$__w'" : ",'$__w'");
+						$in[] = "'{$w}'";
 					}
 					
-					$_where .= empty($_where) ? "{$f} {$com} ({$_in})" : " {$op} {$f} {$com} ({$_in})";
+					$in = implode($in, ',');
+					$whereStr .= empty($whereStr) ? "{$f} {$com} ({$in})" : " {$op} {$f} {$com} ({$in})";
 				}
 			}
 		}
 		
-		return $_where;
+		return $whereStr;
 	}
 	
 	private static function limit($_limit = null)
@@ -428,6 +430,38 @@ class QueryCreator {
 		return self::returnSql(__FUNCTION__);
 	}
 	
+	public static function update_batch($parm)
+	{
+		$rawParm = $parm['update_batch'];
+		
+		self::$table = $rawParm['table'];
+		$refCol = $rawParm['ref'];
+		$setCol = $rawParm['data'][0];
+		unset($setCol[$refCol]);
+		$setCol = array_flip($setCol);
+		
+		$case = array();
+		$when = array();
+		$whereIn = array();
+		
+		foreach($setCol as $col){
+			$case[$col] = $col . ' = CASE ';
+			
+			foreach($rawParm['data'] as $d){
+				$whereIn[$d[$refCol]] = $d[$refCol];
+				$when[$col][] = "WHEN {$refCol} = '{$d[$refCol]}' THEN '{$d[$col]}'";
+			}
+			
+			$case[$col] .= implode($when[$col], ' ');
+			$case[$col] .= " ELSE {$col} END";
+		}
+		
+		self::$where_in = $refCol . ' IN(' . self::convertInsertData($whereIn) . ')';
+		self::$update = implode($case,',');
+		
+		return self::returnSql('update');
+	}
+	
 	private static function convertUpdateData($data = false)
 	{
 		if(is_array($data)){
@@ -492,7 +526,7 @@ class QueryCreator {
 		}
 		
 		$query = self::sqlRegulator($query);
-		var_dump($query);
+		//var_dump($query);
 		self::emptySqlVars();
 		
 		return $query;
@@ -546,6 +580,7 @@ class QueryCreator {
 		self::$or_having = '';
 		self::$insert = array();
 		self::$update = '';
+		self::$update_batch = '';
 		self::$join = '';
 	}
 }

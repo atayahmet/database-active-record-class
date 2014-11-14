@@ -41,6 +41,7 @@ class Mysql implements MysqlInterface {
 	private static $insert_id = null;
 	private static $set = array();
 	private static $update = array();
+	private static $update_batch = array();
 	
 	protected static $query;
 	protected static $qResult;
@@ -50,7 +51,10 @@ class Mysql implements MysqlInterface {
 	
 	protected static $dbErrMsg = array(
 		'incorrect_parm' => 'Incorrect parameter',
-		'table_name' => 'Table name not found'
+		'update_batch_missing_parameter' => 'Missing passed parameters to the update method',
+		'update_batch_ref_col_err' => 'Referance colum not specified',
+		'table_name' => 'Table name not found',
+		'table_name_incorrect' => 'Incorrect table name'
 	);
 	
 	public function __construct()
@@ -487,6 +491,45 @@ class Mysql implements MysqlInterface {
 		}
 	}
 	
+	public static function update_batch($table = false, $data = array(), $refColumn = false)
+	{
+		try{
+			$args = func_get_args();
+			$excParm['m'] = __FUNCTION__;
+			
+			if(count($args) != 3){
+				self::$dbErr = self::$dbErrMsg['update_batch_missing_parameter'];
+				throw new ErrorCatcher(self::$dbErr);
+			}
+			
+			elseif(!is_string($table)){
+				self::$dbErr = self::$dbErrMsg['table_name'];
+				throw new ErrorCatcher(self::$dbErr);
+			}
+			
+			elseif(!is_array($data)){
+				self::$dbErr = self::$dbErrMsg['incorrect_parm'];
+				$excParm['p'] = $data;
+				throw new ErrorCatcher(self::$dbErr);
+			}
+			
+			elseif(!$refColumn){
+				self::$dbErr = self::$dbErrMsg['update_batch_ref_col_err'];
+				throw new ErrorCatcher(self::$dbErr);
+			}else{
+				self::$table = self::dbprefix($table);
+				self::$update_batch = array('table' => self::$table, 'data' => $data, 'ref' => $refColumn);
+				
+				$criterion = self::getCriterion(array('update_batch'));
+				self::$query = QR::update_batch($criterion);
+				self::execute();
+			}
+		}catch(ErrorCatcher $e){
+			$excParm['e'] = $e;
+			echo(ErrorCatcher::fire($excParm));
+		}
+	}
+	
 	public static function query($sql = null)
 	{
 		self::$query = $sql;
@@ -760,6 +803,7 @@ class Mysql implements MysqlInterface {
 		self::$insert_batch = array();
 		self::$set = array();
 		self::$update = array();
+		self::$update_batch = array();
 		self::$distinct = '';
 		self::$limit = '';
 		self::$offset = '';
