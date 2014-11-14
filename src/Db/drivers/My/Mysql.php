@@ -457,6 +457,13 @@ class Mysql implements MysqlInterface {
 			}
 			
 			self::$update = array('table' => self::$table, 'data' => $data);
+			
+			if(count(self::$set) > 0){
+				foreach(self::$set as $field => $val){
+					self::$update['data'][$field] = $val;
+				}
+			}
+			
 			$criterion = self::getCriterion(
 				array(
 					'update',
@@ -498,6 +505,10 @@ class Mysql implements MysqlInterface {
 		
 		elseif(is_object($args[0])){
 			self::$set = array_merge(self::$set,get_object_vars($args[0]));
+		}
+		
+		elseif(is_array($args[0])){
+			self::$set = array_merge(self::$set,$args[0]);
 		}
 		
 		return new static;
