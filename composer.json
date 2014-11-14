@@ -1,7 +1,7 @@
 {
     "name": "atayahmet/database-active-record-class",
     "type": "library",
-    "description": "the written of codeigniter database driver /super-object (get_instance) harmony problem with php 5.3 for",
+    "description": "The written for fast, practical database active record actions",
     "keywords": ["external-db", "codeigniter", "php-5.3"],
     "license": "MIT",
     "authors": [
