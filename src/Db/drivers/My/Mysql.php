@@ -2,23 +2,56 @@
 
 namespace Db\drivers\My;
 
+/**
+ * Database Active Record
+ *
+ *
+ * Why was heard to have to write such a library might ask.
+ * A CMS project I had to do database operations outside the MVC framework I worked on
+ *
+ *
+ * I think will be useful to a alot of people of this library
+ * The used of  codeigniter active record class interface
+ *
+ *
+ * See https://github.com/atayahmet/database-active-record-class
+ * for the full documentary.
+ */
+
 use Db\drivers\My\MysqlInterface;
 use Db\drivers\My\QueryCreator as QR;
 use Db\DbException as ErrorCatcher;
 
 class Mysql implements MysqlInterface {
-	
+	// Database configuration
 	private static $dbconf = false;
 	private static $active = false;
+
+	// database connection object
 	private static $dbLink = null;
-	
+
+	// SELECT string
 	private static $select = array();
+
+	// SELECT MAX()
 	private static $select_max = '';
+
+	// SELECT MIN()
 	private static $select_min = '';
+
+	// SELECT AVG()
 	private static $select_avg = '';
+
+	// SELECT SUM
 	private static $select_sum = '';
+
+	// WHERE combination
 	private static $where = array();
+
+	// WHERE OR combination
 	private static $or_where = array();
+
+	// WHERE IN combination
 	private static $where_in = array();
 	private static $where_not_in = array();
 	private static $or_where_not_in = array();
@@ -61,7 +94,14 @@ class Mysql implements MysqlInterface {
 	{
 		//	if(is_null(self::$dbLink)) self::init();
 	}
-	
+
+	/**
+	 * System is unusable.
+	 *
+	 * @param string $message
+	 * @param array $context
+	 * @return null
+	 */
 	public static function select($_select = null)
 	{
 		self::$select[] = $_select;
