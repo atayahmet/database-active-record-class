@@ -429,7 +429,19 @@ class QueryCreator {
 		
 		return self::returnSql(__FUNCTION__);
 	}
-	
+
+	public static function delete($parm)
+	{
+		foreach($parm as $method => $q){
+			if(method_exists(new static, $method)){
+				self::$method($q);
+			}
+		}
+
+		self::$table = $parm['table'];
+		return self::returnSql(__FUNCTION__);
+	}
+
 	public static function update_batch($parm)
 	{
 		$rawParm = $parm['update_batch'];
@@ -523,10 +535,16 @@ class QueryCreator {
 						. self::$where_in . self::$or_where_in. self::$where_not_in. self::$or_where_not_in . self::$like 
 						. self::$or_like . self::$not_like . self::$or_not_like . self::$limit;
 				break;
+
+			case "delete";
+				$query = "DELETE FROM " . self::$table . " WHERE " . self::$where . self::$or_where
+					. self::$where_in . self::$or_where_in. self::$where_not_in. self::$or_where_not_in . self::$like
+					. self::$or_like . self::$not_like . self::$or_not_like . self::$limit;
+				break;
 		}
-		
+		//exit($query);
 		$query = self::sqlRegulator($query);
-		//var_dump($query);
+		var_dump($query);
 		self::emptySqlVars();
 		
 		return $query;

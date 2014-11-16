@@ -369,8 +369,7 @@ class Mysql implements MysqlInterface {
 			if($offset){
 				self::offset($offset);
 			}
-			
-			
+
 			$criterion = self::getCriterion(
 						array(
 							'select',
@@ -529,7 +528,54 @@ class Mysql implements MysqlInterface {
 			echo(ErrorCatcher::fire($excParm));
 		}
 	}
-	
+
+	public static function delete($table = false)
+	{
+		try {
+			if(!$table){
+				self::$dbErr = self::$dbErrMsg['table_name'];
+				throw new ErrorCatcher(self::$dbErr);
+			}
+
+			elseif(!is_array($table)){
+				$table = array($table);
+			}
+
+			foreach($table as $tbl) {
+				self::$table = self::dbprefix($tbl);
+
+				$criterion = self::getCriterion(
+					array(
+						'table',
+						'where',
+						'or_where',
+						'where_in',
+						'or_where_in',
+						'where_not_in',
+						'or_where_not_in',
+						'like',
+						'or_like',
+						'not_like',
+						'or_not_like',
+						'limit'
+					)
+				);
+
+				self::$query = QR::delete($criterion);
+				self::execute();
+			}
+
+		}catch (ErrorCatcher $e){
+			$excParm['e'] = $e;
+			echo(ErrorCatcher::fire($excParm));
+		}
+	}
+
+	public static function empty_table($table = false)
+	{
+		self::delete($table);
+	}
+
 	public static function query($sql = null)
 	{
 		self::$query = $sql;
@@ -744,7 +790,7 @@ class Mysql implements MysqlInterface {
 		if(self::$qResult){
 			$i = 0;
 			$j = 0;
-			
+
 			$ResultArr = array();
 			$fields = mysql_num_fields(self::$qResult);
 			
