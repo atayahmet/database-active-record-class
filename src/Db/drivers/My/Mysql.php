@@ -53,54 +53,93 @@ class Mysql implements MysqlInterface {
 
 	// WHERE IN combination
 	private static $where_in = array();
+
+	// WHERE NOT IN combination
 	private static $where_not_in = array();
+
+	// WHERE OR NOT IN combination
 	private static $or_where_not_in = array();
+
+	// WHERE OR IN combination
 	private static $or_where_in = array();
+
+	// LIKE combination
 	private static $like = array();
+
+	// OR LIKE combination
 	private static $or_like = array();
+
+	// NOT LIKE combination
 	private static $not_like = array();
+
+	// OR NOT LIKE combination
 	private static $or_not_like = array();
+
+	// GROUP BY combination
 	private static $group_by = array();
+
+	// ORDER BY combination
 	private static $order_by = array();
+
+	// HAVING combination
 	private static $having = array();
+
+	// OR HAVING combination
 	private static $or_having = array();
+
+	// (INNER, LEFT, RIGHT, OUTER, CROSS) JOIN combination
 	private static $join = array();
+
+	// LIMIT
 	private static $limit = null;
+
+	// OFFSET
 	private static $offset = null;
+
+	// SELECT DISTINCT()
 	private static $distinct = '';
+
+	// Query table
 	private static $table;
+
+	// INSERT
 	private static $insert = array();
+
+	// Multi INSERT
 	private static $insert_batch = array();
+
+	// Last insert id
 	private static $insert_id = null;
+
+	// Data collectors for update query
 	private static $set = array();
+
+	// UPDATE
 	private static $update = array();
+
+	// Multi UPDATE
 	private static $update_batch = array();
-	
+
+	// Query string
 	protected static $query;
+
+	// query result
 	protected static $qResult;
+
+	// database error control variable
 	protected static $dbErr;
+
+	// query repository
 	protected static $Queries = array();
+
+	// Database connection close check variable
 	protected static $dbClosed = false;
-	
-	protected static $dbErrMsg = array(
-		'incorrect_parm' => 'Incorrect parameter',
-		'update_batch_missing_parameter' => 'Missing passed parameters to the update method',
-		'update_batch_ref_col_err' => 'Referance colum not specified',
-		'table_name' => 'Table name not found',
-		'table_name_incorrect' => 'Incorrect table name'
-	);
-	
-	public function __construct()
-	{
-		//	if(is_null(self::$dbLink)) self::init();
-	}
 
 	/**
-	 * System is unusable.
+	 * Query select collectors
 	 *
-	 * @param string $message
-	 * @param array $context
-	 * @return null
+	 * @param string $_select
+	 * @return new static
 	 */
 	public static function select($_select = null)
 	{
@@ -108,7 +147,13 @@ class Mysql implements MysqlInterface {
 		
 		return new static;
 	}
-	
+
+	/**
+	 * Query select MAX collectors
+	 *
+	 * @param string $field
+	 * @return new static
+	 */
 	public static function select_max($field = false)
 	{
 		if($field){
@@ -117,7 +162,13 @@ class Mysql implements MysqlInterface {
 		
 		return new static;
 	}
-	
+
+	/**
+	 * Query select MIN collectors
+	 *
+	 * @param string $field
+	 * @return new static
+	 */
 	public static function select_min($field = false)
 	{
 		if($field){
@@ -126,7 +177,13 @@ class Mysql implements MysqlInterface {
 		
 		return new static;
 	}
-	
+
+	/**
+	 * Query select AVG collectors
+	 *
+	 * @param string $field
+	 * @return new static
+	 */
 	public static function select_avg($field = false)
 	{
 		if($field){
@@ -135,7 +192,13 @@ class Mysql implements MysqlInterface {
 		
 		return new static;
 	}
-	
+
+	/**
+	 * Query select SUM collectors
+	 *
+	 * @param string $field
+	 * @return new static
+	 */
 	public static function select_sum($field = false)
 	{
 		if($field){
@@ -144,7 +207,14 @@ class Mysql implements MysqlInterface {
 		
 		return new static;
 	}
-	
+
+	/**
+	 * Query WHERE parameter collectors
+	 *
+	 * @param string/array $_where
+	 * @param string/integer $value (optional)
+	 * @return new static
+	 */
 	public static function where($_where = null)
 	{
 		$args = func_get_args();
@@ -157,7 +227,14 @@ class Mysql implements MysqlInterface {
 		
 		return new static;
 	}
-	
+
+	/**
+	 * Query WHERE OR parameter collectors
+	 *
+	 * @param string/array $_or_where
+	 * @param string/integer $value (optional)
+	 * @return new static
+	 */
 	public static function or_where($_or_where = null)
 	{
 		$args = func_get_args();
@@ -170,7 +247,14 @@ class Mysql implements MysqlInterface {
 		
 		return new static;
 	}
-	
+
+	/**
+	 * Query WHERE IN parameter collectors
+	 *
+	 * @param string $_or_where
+	 * @param string/integer/array
+	 * @return new static
+	 */
 	public static function where_in()
 	{
 		$args = func_get_args();
@@ -181,7 +265,14 @@ class Mysql implements MysqlInterface {
 		
 		return new static;
 	}
-	
+
+	/**
+	 * Query WHERE OR IN parameter collectors
+	 *
+	 * @param string $_or_where_in
+	 * @param string/integer/array
+	 * @return new static
+	 */
 	public static function or_where_in()
 	{
 		$args = func_get_args();
@@ -192,7 +283,14 @@ class Mysql implements MysqlInterface {
 		
 		return new static;
 	}
-	
+
+	/**
+	 * Query WHERE NOT IN parameter collectors
+	 *
+	 * @param string $_where_not_in
+	 * @param string/integer/array
+	 * @return new static
+	 */
 	public static function where_not_in()
 	{
 		$args = func_get_args();
@@ -203,7 +301,14 @@ class Mysql implements MysqlInterface {
 		
 		return new static;
 	}
-	
+
+	/**
+	 * Query WHERE OR NOT IN parameter collectors
+	 *
+	 * @param string $_or_where_not_in
+	 * @param string/integer/array
+	 * @return new static
+	 */
 	public static function or_where_not_in()
 	{
 		$args = func_get_args();
@@ -214,7 +319,15 @@ class Mysql implements MysqlInterface {
 		
 		return new static;
 	}
-	
+
+	/**
+	 * Query LIKE parameter collectors
+	 *
+	 * @param string $field
+	 * @param string/integer $value
+	 * @param string $pos
+	 * @return new static
+	 */
 	public static function like($field = false, $value = false, $pos = 'both')
 	{
 		if($field && $value){
@@ -223,7 +336,15 @@ class Mysql implements MysqlInterface {
 		
 		return new static;
 	}
-	
+
+	/**
+	 * Query OR LIKE parameter collectors
+	 *
+	 * @param string $field
+	 * @param string/integer $value
+	 * @param string $pos
+	 * @return new static
+	 */
 	public static function or_like($field = false, $value = false, $pos = 'both')
 	{
 		if($field && $value){
@@ -232,7 +353,15 @@ class Mysql implements MysqlInterface {
 		
 		return new static;
 	}
-	
+
+	/**
+	 * Query NOT LIKE parameter collectors
+	 *
+	 * @param string $field
+	 * @param string/integer $value
+	 * @param string $pos
+	 * @return new static
+	 */
 	public static function not_like($field = false, $value = false, $pos = 'both')
 	{
 		if($field && $value){
@@ -241,7 +370,15 @@ class Mysql implements MysqlInterface {
 		
 		return new static;
 	}
-	
+
+	/**
+	 * Query OR NOT LIKE parameter collectors
+	 *
+	 * @param string $field
+	 * @param string/integer $value
+	 * @param string $pos
+	 * @return new static
+	 */
 	public static function or_not_like($field = false, $value = false, $pos = 'both')
 	{
 		if($field && $value){
@@ -433,14 +570,14 @@ class Mysql implements MysqlInterface {
 			if($table){
 				if($data && !is_array($data) && !is_object($data)){
 					$excParm = array('p' => $data);
-					self::$dbErr = self::$dbErrMsg['incorrect_parm'];
+					self::$dbErr = ErrorCatcher::errorMsg('incorrect_parm');
 					throw new ErrorCatcher(self::$dbErr);
 				}else{
 					self::$table = self::dbprefix($table);
 					return true;
 				}
 			}else{
-				self::$dbErr = self::$dbErrMsg['table_name'];
+				self::$dbErr = ErrorCatcher::errorMsg('table_name');
 				throw new ErrorCatcher(self::$dbErr);
 			}
 		}catch (ErrorCatcher $e) {
@@ -537,23 +674,23 @@ class Mysql implements MysqlInterface {
 			$excParm['m'] = __FUNCTION__;
 			
 			if(count($args) != 3){
-				self::$dbErr = self::$dbErrMsg['update_batch_missing_parameter'];
+				self::$dbErr = ErrorCatcher::errorMsg('update_batch_missing_parameter');
 				throw new ErrorCatcher(self::$dbErr);
 			}
 			
 			elseif(!is_string($table)){
-				self::$dbErr = self::$dbErrMsg['table_name'];
+				self::$dbErr = ErrorCatcher::errorMsg('table_name');
 				throw new ErrorCatcher(self::$dbErr);
 			}
 			
 			elseif(!is_array($data)){
-				self::$dbErr = self::$dbErrMsg['incorrect_parm'];
+				self::$dbErr = ErrorCatcher::errorMsg('incorrect_parm');
 				$excParm['p'] = $data;
 				throw new ErrorCatcher(self::$dbErr);
 			}
 			
 			elseif(!$refColumn){
-				self::$dbErr = self::$dbErrMsg['update_batch_ref_col_err'];
+				self::$dbErr = ErrorCatcher::errorMsg('update_batch_ref_col_err');
 				throw new ErrorCatcher(self::$dbErr);
 			}else{
 				self::$table = self::dbprefix($table);
@@ -573,7 +710,7 @@ class Mysql implements MysqlInterface {
 	{
 		try {
 			if(!$table){
-				self::$dbErr = self::$dbErrMsg['table_name'];
+				self::$dbErr = ErrorCatcher::errorMsg('table_name');
 				throw new ErrorCatcher(self::$dbErr);
 			}
 
