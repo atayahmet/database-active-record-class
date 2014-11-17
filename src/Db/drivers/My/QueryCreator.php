@@ -55,6 +55,12 @@ class QueryCreator {
 	protected static $orderby;
 	protected static $distinct;
 	
+	/**
+	 * Query select creator
+	 *
+	 * @param array $_select
+	 * @return string
+	 */
 	private static function select($_select)
 	{
 		if(count($_select) > 0){
@@ -68,6 +74,13 @@ class QueryCreator {
 		self::$select = self::$select;
 	}
 	
+	/**
+	 * Select variations
+	 *
+	 * @param string $field
+	 * @param string $func
+	 * @return void
+	 */
 	private static function selectVariation($field, $func)
 	{
 		if($field){
@@ -81,6 +94,12 @@ class QueryCreator {
 		}
 	}
 	
+	/**
+	 * Select max initializer
+	 *
+	 * @param string $field
+	 * @return void
+	 */
 	private static function select_max($field = false)
 	{
 		if($field){
@@ -88,6 +107,12 @@ class QueryCreator {
 		}
 	}
 	
+	/**
+	 * Select min initializer
+	 *
+	 * @param string $field
+	 * @return void
+	 */
 	private static function select_min($field = false)
 	{
 		if($field){
@@ -95,6 +120,12 @@ class QueryCreator {
 		}
 	}
 	
+	/**
+	 * Select avg initializer
+	 *
+	 * @param string $field
+	 * @return void
+	 */
 	private static function select_avg($field = false)
 	{
 		if($field){
@@ -102,6 +133,12 @@ class QueryCreator {
 		}
 	}
 	
+	/**
+	 * Select sum initializer
+	 *
+	 * @param string $field
+	 * @return void
+	 */
 	private static function select_sum($field = false)
 	{
 		if($field){
@@ -109,11 +146,23 @@ class QueryCreator {
 		}
 	}
 	
+	/**
+	 * From initializer
+	 *
+	 * @param string $table
+	 * @return void
+	 */
 	private static function from($table)
 	{
 		self::$from = 'FROM ' . $table;
 	}
 	
+	/**
+	 * Where initializer
+	 *
+	 * @param string $_where
+	 * @return void
+	 */
 	private static function where($_where)
 	{
 		if(count($_where) > 0){
@@ -130,6 +179,12 @@ class QueryCreator {
 		}
 	}
 	
+	/**
+	 * Where initializer with or operator
+	 *
+	 * @param string $_or_where
+	 * @return void
+	 */
 	private static function or_where($_or_where)
 	{
 		foreach($_or_where as $w){
@@ -148,6 +203,12 @@ class QueryCreator {
 		}
 	}
 	
+	/**
+	 * Where initializer with in operator
+	 *
+	 * @param string $_where_in
+	 * @return void
+	 */
 	private static function where_in($_where_in)
 	{
 		if(count($_where_in) > 0){
@@ -155,6 +216,12 @@ class QueryCreator {
 		}
 	}
 	
+	/**
+	 * Where initializer with or and in operator
+	 *
+	 * @param string $_or_where_in
+	 * @return void
+	 */
 	private static function or_where_in($_or_where_in)
 	{
 		if(count($_or_where_in) > 0){
@@ -162,6 +229,12 @@ class QueryCreator {
 		}
 	}
 	
+	/**
+	 * Where initializer with not and in operator
+	 *
+	 * @param string $_where_not_in
+	 * @return void
+	 */
 	private static function where_not_in($_where_not_in)
 	{
 		if(count($_where_not_in) > 0){
@@ -169,6 +242,12 @@ class QueryCreator {
 		}
 	}
 	
+	/**
+	 * Where initializer with or and not and in operator
+	 *
+	 * @param string $_or_where_not_in
+	 * @return void
+	 */
 	private static function or_where_not_in($_or_where_not_in)
 	{
 		if(count($_or_where_not_in) > 0){
@@ -176,6 +255,12 @@ class QueryCreator {
 		}
 	}
 	
+	/**
+	 * Where initializer with LIKE operator
+	 *
+	 * @param string $_like
+	 * @return void
+	 */
 	private static function like($_like)
 	{
 		if(count($_like) > 0){
@@ -183,6 +268,12 @@ class QueryCreator {
 		}
 	}
 	
+	/**
+	 * Where initializer with OR LIKE operator
+	 *
+	 * @param string $_or_like
+	 * @return void
+	 */
 	private static function or_like($_or_like)
 	{
 		if(count($_or_like) > 0){
@@ -190,6 +281,12 @@ class QueryCreator {
 		}
 	}
 	
+	/**
+	 * Where initializer with NOT LIKE operator
+	 *
+	 * @param string $_or_like
+	 * @return void
+	 */
 	private static function not_like($_not_like)
 	{
 		if(count($_not_like) > 0){
@@ -197,6 +294,12 @@ class QueryCreator {
 		}
 	}
 	
+	/**
+	 * Where initializer with OR NOT LIKE operator
+	 *
+	 * @param string $_or_not_like
+	 * @return void
+	 */
 	private static function or_not_like($_or_not_like)
 	{
 		if(count($_or_not_like) > 0){
@@ -204,6 +307,14 @@ class QueryCreator {
 		}
 	}
 	
+	/**
+	 * Like operators variation handler
+	 *
+	 * @param string $compare
+	 * @param string $operator
+	 * @param array $_like
+	 * @return string
+	 */
 	private static function likeVariation($compare, $operator, $_like)
 	{
 		$likeTxt = '';
@@ -218,6 +329,12 @@ class QueryCreator {
 		return $likeTxt;
 	}
 	
+	/**
+	 * Join operators variation handler
+	 *
+	 * @param array $_join
+	 * @return void
+	 */
 	private static function join($_join)
 	{
 		$joinTxt = '';
@@ -231,6 +348,12 @@ class QueryCreator {
 		self::$join = $joinTxt;
 	}
 	
+	/**
+	 * Join operators handler
+	 *
+	 * @param string $type
+	 * @return string
+	 */
 	private static function joinType($type = 'inner')
 	{
 		$joinTypes = array(
@@ -262,6 +385,12 @@ class QueryCreator {
 		}
 	}
 	
+	/**
+	 * will begin to match point of the like query
+	 *
+	 * @param string $like
+	 * @return string
+	 */
 	private static function likePos($like)
 	{
 		if($like['pos'] == 'both'){
@@ -281,6 +410,14 @@ class QueryCreator {
 		}
 	}
 	
+	/**
+	 * Where in varianation
+	 *
+	 * @param string $com
+	 * @param string $op
+	 * @param array $where
+	 * @return string
+	 */
 	private static function whereInVariation($com, $op, $where)
 	{
 		$whereStr = '';
@@ -307,6 +444,12 @@ class QueryCreator {
 		return $whereStr;
 	}
 	
+	/**
+	 * LIMIT initializer
+	 *
+	 * @param string/integer $_limit
+	 * @return void
+	 */
 	private static function limit($_limit = null)
 	{
 		if(!is_null($_limit) && !empty($_limit)){
@@ -314,6 +457,12 @@ class QueryCreator {
 		}
 	}
 	
+	/**
+	 * Skip data with limit query
+	 *
+	 * @param string/integer $_offset
+	 * @return void
+	 */
 	private static function offset($_offset)
 	{
 		if(!is_null($_offset)){
@@ -324,7 +473,13 @@ class QueryCreator {
 			}
 		}
 	}
-
+	
+	/**
+	 * Group by initializer
+	 *
+	 * @param array $_groupby
+	 * @return void
+	 */
 	private static function group_by($_groupby)
 	{
 		$groupTxt = '';
@@ -336,6 +491,12 @@ class QueryCreator {
 		if(!empty($groupTxt)) self::$groupby = ' GROUP BY ' . $groupTxt;
 	}
 	
+	/**
+	 * Order by initializer
+	 *
+	 * @param array $_orderby
+	 * @return void
+	 */
 	private static function order_by($_orderby)
 	{
 		if(count($_orderby) > 0){
@@ -358,11 +519,23 @@ class QueryCreator {
 		}
 	}
 	
+	/**
+	 * Distinct initializer
+	 *
+	 * @param string $_distinct
+	 * @return void
+	 */
 	private static function distinct($_distinct)
 	{
 		self::$distinct = $_distinct;
 	}
 	
+	/**
+	 * Having initializer
+	 *
+	 * @param array $_having
+	 * @return void
+	 */
 	private static function having($_having)
 	{
 		if(count($_having)){
@@ -370,6 +543,12 @@ class QueryCreator {
 		}
 	}
 	
+	/**
+	 * Having initializer with or operator
+	 *
+	 * @param array $_or_having
+	 * @return void
+	 */
 	private static function or_having($_or_having)
 	{
 		if(count($_or_having)){
@@ -377,6 +556,13 @@ class QueryCreator {
 		}
 	}
 	
+	/**
+	 * Having varianation handler
+	 *
+	 * @param string $op
+	 * @param array $_having
+	 * @return string
+	 */
 	private static function havingVariation($op, $_having)
 	{
 		$havingTxt = '';
@@ -395,6 +581,12 @@ class QueryCreator {
 		return $havingTxt;
 	}
 	
+	/**
+	 * SELECT query creator
+	 *
+	 * @param array $query
+	 * @return string
+	 */
 	public static function get($query)
 	{
 		foreach($query as $method => $q){
@@ -406,6 +598,12 @@ class QueryCreator {
 		return self::returnSql(__FUNCTION__);
 	}
 	
+	/**
+	 * INSERT query creator
+	 *
+	 * @param array $query
+	 * @return string
+	 */
 	public static function insert($parm)
 	{
 		self::$table = $parm['insert']['table'];
@@ -417,6 +615,12 @@ class QueryCreator {
 		return self::returnSql(__FUNCTION__);
 	}
 	
+	/**
+	 * MULTI-INSERT query creator
+	 *
+	 * @param array $query
+	 * @return string
+	 */
 	public static function insert_batch($parm)
 	{
 		if(count($parm['insert_batch']['data']) > 0){
@@ -434,6 +638,12 @@ class QueryCreator {
 		}
 	}
 	
+	/**
+	 * UPDATE query creator
+	 *
+	 * @param array $query
+	 * @return string
+	 */
 	public static function update($query)
 	{
 		foreach($query as $method => $q){
@@ -459,7 +669,13 @@ class QueryCreator {
 		self::$table = $parm['table'];
 		return self::returnSql(__FUNCTION__);
 	}
-
+	
+	/**
+	 * MULTI-UPDATE query creator
+	 *
+	 * @param array $parm
+	 * @return string
+	 */
 	public static function update_batch($parm)
 	{
 		$rawParm = $parm['update_batch'];
@@ -492,6 +708,12 @@ class QueryCreator {
 		return self::returnSql('update');
 	}
 	
+	/**
+	 * update parameters array to data conert
+	 *
+	 * @param array $data
+	 * @return string
+	 */
 	private static function convertUpdateData($data = false)
 	{
 		if(is_array($data)){
@@ -505,6 +727,12 @@ class QueryCreator {
 		}
 	}
 	
+	/**
+	 * insert parameters array to data conert
+	 *
+	 * @param array $data
+	 * @return string
+	 */
 	private static function convertInsertData($data = false)
 	{
 		if(is_array($data)){
@@ -516,6 +744,12 @@ class QueryCreator {
 		return '';
 	}
 	
+	/**
+	 * Comparison operators control
+	 *
+	 * @param string $data
+	 * @return string
+	 */
 	private static function checkOp($op)
 	{
 		$oprs = array('!=','<>','<=','>=','<','>','=');
@@ -531,6 +765,12 @@ class QueryCreator {
 		return $op.' = ';
 	}
 	
+	/**
+	 * Combining the query parameters
+	 *
+	 * @param string $type
+	 * @return string
+	 */
 	private static function returnSql($type)
 	{
 		switch($type){
@@ -569,6 +809,12 @@ class QueryCreator {
 		
 	}
 	
+	/**
+	 * SQL regulator
+	 *
+	 * @param string $query
+	 * @return string
+	 */
 	protected static function sqlRegulator($query)
 	{
 		foreach(array('AND','OR') as $op){
@@ -588,6 +834,11 @@ class QueryCreator {
 		return preg_replace('/(\s+)/', ' ',$query);
 	}
 	
+	/**
+	 * reset the query variables
+	 *
+	 * @return void
+	 */
 	protected static function emptySqlVars()
 	{
 		self::$select = '';
