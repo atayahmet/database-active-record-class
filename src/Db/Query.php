@@ -17,11 +17,12 @@ namespace Db;
  */
  
 use Db\drivers\My\Mysql;
+use Db\DbException as ErrorCatcher;
 
 class Query {
 	private static $dbconf = null;
 	private static $driver;
-	
+	private static $dbErrMsg;
 	public static function __callStatic($method, $parm)
 	{
 		self::init(); 
@@ -33,18 +34,30 @@ class Query {
 	
 	public static function init($dbConf = false)
 	{
-		include(APPPATH.'config/database'.EXT);
+		include('/../config.php');
+		
+		try{
+			$current = preg_split('/\:/',$current);
+			
+			if(count($current) < 2|| !isset($db[$current[0]][$current[1]])){
+				self::$dbErrMsg = ErrorCatcher::errorMsg('config_error');
+				throw new ErrorCatcher(self::$dbErrMsg);
+			}
+		}catch(ErrorCatcher $e){
+			$excParm['e'] = $e;
+			echo(ErrorCatcher::fire($excParm));
+		}
+		
+		self::$driver = $current[0];
+		$currentConf = $db[$current[0]][$current[1]];
 		
 		if(!$dbConf){
 			if(is_null(self::$dbconf )){
-				self::$dbconf = $db;
-				//self::$active = $active_group;
-				
-				self::$driver = ucfirst($db[$active_group]['dbdriver']);
+				self::$dbconf = $currentConf;
+				self::$driver = ucfirst(self::$driver);
 				
 				$_driver = 'Db\drivers\My\\' . self::$driver;
-				
-				$_driver::init($db[$active_group]);
+				$_driver::init($currentConf);
 			}
 		}else{
 			self::$dbconf = $config;

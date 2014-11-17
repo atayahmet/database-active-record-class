@@ -22,7 +22,8 @@ class DbException extends \Exception implements DbExceptionInterface {
 		'update_batch_missing_parameter' => 'Missing passed parameters to the update method',
 		'update_batch_ref_col_err' => 'Referance colum not specified',
 		'table_name' => 'Table name not found',
-		'table_name_incorrect' => 'Incorrect table name'
+		'table_name_incorrect' => 'Incorrect table name',
+		'config_error' => 'Its database config options is incorrect'
 	);
 	
 	/**
