@@ -566,6 +566,11 @@ class Mysql implements MysqlInterface {
 			self::$table = self::dbprefix($table);
 		}
 		
+		//-----------------------------------------------------------------------
+		//
+		// All parameters of the query is compiled and sent to the query builder
+		//
+		//-----------------------------------------------------------------------
 		$criterion = self::getCriterion(
 						array(
 							'select',
@@ -595,8 +600,10 @@ class Mysql implements MysqlInterface {
 						)
 					);
 				
-		
+		// query building
 		self::$query = QR::get($criterion);
+		
+		// and execute
 		self::execute();
 		
 		return clone new static;
@@ -625,7 +632,10 @@ class Mysql implements MysqlInterface {
 			if($offset){
 				self::offset($offset);
 			}
-
+			
+			//---------------------------------
+			// compiling of the query parameter
+			//---------------------------------
 			$criterion = self::getCriterion(
 						array(
 							'select',
@@ -635,8 +645,11 @@ class Mysql implements MysqlInterface {
 							'offset',
 						)
 					);
-					
+			
+			// query building
 			self::$query = QR::get($criterion);
+			
+			// and execute
 			self::execute();
 			
 			return clone new static;
@@ -653,6 +666,11 @@ class Mysql implements MysqlInterface {
 	 */
 	private static function checkParameterType($table = false, $data = false)
 	{
+		//--------------------------------------------------------
+		// Some parameters must be array in query 
+		// Here we will check the array of parameters that need to be
+		// Criteria will throw error is not appropriate
+		//--------------------------------------------------------
 		try {
 			if($table){
 				if($data && !is_array($data) && !is_object($data)){
@@ -681,6 +699,7 @@ class Mysql implements MysqlInterface {
 	 */
 	public static function insert($table = false, $data = false)
 	{
+		// control parameters type
 		if(self::checkParameterType($table, $data)){
 			if(is_object($data)){
 				$data = get_object_vars($data);
@@ -700,8 +719,15 @@ class Mysql implements MysqlInterface {
 				}
 			}
 			
+			//---------------------------------
+			// compiling of the query parameter
+			//---------------------------------
 			$criterion = self::getCriterion(array('insert'));
+			
+			// query building
 			self::$query = QR::insert($criterion);
+			
+			// and execute
 			self::execute();
 		}
 	}
@@ -715,6 +741,7 @@ class Mysql implements MysqlInterface {
 	 */
 	public static function insert_batch($table = false, $data = false)
 	{
+		// control parameters type
 		if(self::checkParameterType($table, $data)){
 			if($data){
 				self::$insert_batch = array('table' => self::$table, 'data' => $data);
@@ -735,6 +762,7 @@ class Mysql implements MysqlInterface {
 	 */
 	public static function update($table = false, $data = false, $where = false)
 	{
+		// control parameters type
 		if(self::checkParameterType($table, $data)){
 			if($where){
 				self::$where[] = $where;
@@ -752,6 +780,9 @@ class Mysql implements MysqlInterface {
 				}
 			}
 			
+			//---------------------------------
+			// compiling of the query parameter
+			//---------------------------------
 			$criterion = self::getCriterion(
 				array(
 					'update',
@@ -770,7 +801,10 @@ class Mysql implements MysqlInterface {
 				)
 			);
 			
+			// query building
 			self::$query = QR::update($criterion);
+			
+			// and execute
 			self::execute();
 		}
 	}
@@ -785,6 +819,10 @@ class Mysql implements MysqlInterface {
 	 */
 	public static function update_batch($table = false, $data = array(), $refColumn = false)
 	{
+		//--------------------------------------------------------------------
+		// Used sql case for multi update
+		// You will find that this is done driver/My/QueryCreator class method
+		// -------------------------------------------------------------------
 		try{
 			$args = func_get_args();
 			$excParm['m'] = __FUNCTION__;
@@ -842,7 +880,10 @@ class Mysql implements MysqlInterface {
 
 			foreach($table as $tbl) {
 				self::$table = self::dbprefix($tbl);
-
+				
+				//---------------------------------
+				// compiling of the query parameter
+				//---------------------------------
 				$criterion = self::getCriterion(
 					array(
 						'table',
@@ -859,8 +900,11 @@ class Mysql implements MysqlInterface {
 						'limit'
 					)
 				);
-
+				
+				// query building
 				self::$query = QR::delete($criterion);
+				
+				// and execute
 				self::execute();
 			}
 
@@ -947,6 +991,9 @@ class Mysql implements MysqlInterface {
 		self::$select[] = 'SQL_CALC_FOUND_ROWS *';
 		self::$table = self::dbprefix(!$table ? self::$table : $table);
 		
+		//---------------------------------
+		// compiling of the query parameter
+		//---------------------------------
 		$criterion = self::getCriterion(
 						array(
 							'select',
@@ -965,7 +1012,10 @@ class Mysql implements MysqlInterface {
 						)
 					);
 					
+		// query building
 		self::$query = QR::get($criterion);
+		
+		// and execute
 		self::execute();
 		
 		self::$query = "SELECT FOUND_ROWS() AS total";
@@ -1014,11 +1064,13 @@ class Mysql implements MysqlInterface {
 	 */
 	private static function getCriterion($_criterion)
 	{
+		//----------------------------------------------
+		// We will compile sql parameters in this method
+		// ---------------------------------------------
 		$criterion = array();
 		
 		if(is_array($_criterion)){
 			foreach($_criterion as $k => $c){
-				
 				if(isset(self::$$c) || is_null(self::$$c)){
 					$criterion[(!is_numeric($k) ? $k : $c)] = self::$$c;
 				}
