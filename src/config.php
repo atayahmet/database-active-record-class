@@ -12,7 +12,7 @@ $db = array(
 			'password' => '',
 			'database' => 'aa_atacms',
 			'dbprefix' => 'aa_'
-			
+
 		)
 	)
 );
