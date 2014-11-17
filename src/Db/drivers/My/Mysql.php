@@ -1125,7 +1125,27 @@ class Mysql implements MysqlInterface {
 			
 		self::emptySqlVars();
 	}
-	
+
+	/**
+	 * get the query dump
+	 *
+	 * @param string $type
+	 * @return array
+	 */
+	public static function dump($type= 'html')
+	{
+		switch($type){
+			case "html";
+				return ErrorCatcher::injectView('query_dump',array('queries' => self::$Queries));
+				break;
+
+			case "array";
+				return self::$Queries;
+				break;
+		}
+
+	}
+
 	/**
 	 * Create prefixes  with the table name
 	 *

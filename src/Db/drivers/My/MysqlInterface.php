@@ -44,6 +44,7 @@ Interface MysqlInterface
 	public static function result();
 	public static function result_array();
 	public static function count_all_results($table = false);
+	public static function dump($type= 'html');
 	public static function count_all($table = false);
 	public static function join($table = false, $compare = false, $type = 'inner join');
 	public static function get_where($table = false, $where = false, $limit = false, $offset = false);
