@@ -1,5 +1,21 @@
-<?php namespace Db;
+<?php 
 
+namespace Db;
+
+/**
+ * @package Database Active Record
+ * @author Ahmet ATAY / 2014 November
+ * @version 1.0
+ *
+ * 
+ * Container class
+ * 
+ * @contact:
+ * 	web: http://www.atayahmet.com
+ * 	email: ahmet.atay@hotmail.com
+ * 	github: https://github.com/atayahmet
+ */
+ 
 use Db\drivers\My\Mysql;
 
 class Query {

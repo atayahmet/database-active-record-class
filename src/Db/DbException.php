@@ -1,4 +1,20 @@
-<?php namespace Db;
+<?php 
+
+namespace Db;
+
+/**
+ * @package Database Active Record
+ * @author Ahmet ATAY / 2014 November
+ * @version 1.0
+ *
+ * 
+ * Error handler class
+ * 
+ * @contact:
+ * 	web: http://www.atayahmet.com
+ * 	email: ahmet.atay@hotmail.com
+ * 	github: https://github.com/atayahmet
+ */
 
 class DbException extends \Exception implements DbExceptionInterface {
 	protected static $dbErrMsg = array(
@@ -8,7 +24,13 @@ class DbException extends \Exception implements DbExceptionInterface {
 		'table_name' => 'Table name not found',
 		'table_name_incorrect' => 'Incorrect table name'
 	);
-
+	
+	/**
+	 * Print error message to browser with template
+	 *
+	 * @param string $parm
+	 * @return string
+	 */
 	public static function fire($parm = false)
 	{
 		if(is_array($parm)){
@@ -17,7 +39,13 @@ class DbException extends \Exception implements DbExceptionInterface {
 			return $view;
 		}
 	}
-
+	
+	/**
+	 * Error message
+	 *
+	 * @param string $key
+	 * @return string
+	 */
 	public static function errorMsg($key = false)
 	{
 		if(isset(self::$dbErrMsg[$key])){
@@ -26,7 +54,14 @@ class DbException extends \Exception implements DbExceptionInterface {
 
 		return '';
 	}
-
+	
+	/**
+	 * Inject html source from views folder
+	 *
+	 * @param string $file
+	 * @param array $parm
+	 * @return string
+	 */
 	public static function injectView($file = false, $parm = false)
 	{
 		ob_start();
