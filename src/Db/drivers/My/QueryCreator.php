@@ -55,17 +55,6 @@ class QueryCreator {
 	protected static $orderby;
 	protected static $distinct;
 	
-	/**
-	 * Initialize Query select collectors
-	 *
-	 * @param string $_select
-	 * @return new static
-	 */
-	public static function init($config)
-	{
-		self::$db = $config;
-	}
-	
 	private static function select($_select)
 	{
 		if(count($_select) > 0){
