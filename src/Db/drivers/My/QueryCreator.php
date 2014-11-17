@@ -1,6 +1,30 @@
-<?php namespace Db\drivers\My;
+<?php 
 
+namespace Db\drivers\My;
+
+/**
+ * @package Database Active Record
+ * @author Ahmet ATAY / 2014 November
+ * @version 1.0
+ *
+ * is a query builder class
+ 
+ * @contact:
+ * 	web: http://www.atayahmet.com
+ * 	email: ahmet.atay@hotmail.com
+ * 	github: https://github.com/atayahmet
+ * 
+ * See https://github.com/atayahmet/database-active-record-class
+ * for the full documentary.
+ * 
+ */
+ 
 class QueryCreator {
+	//-----------------------------------------------
+	//
+	// Variables are processed by the query parameter
+	// 
+	//-----------------------------------------------
 	protected static $db;
 	protected static $select = '';
 	protected static $select_max = '';
@@ -31,7 +55,12 @@ class QueryCreator {
 	protected static $orderby;
 	protected static $distinct;
 	
-	
+	/**
+	 * Initialize Query select collectors
+	 *
+	 * @param string $_select
+	 * @return new static
+	 */
 	public static function init($config)
 	{
 		self::$db = $config;
@@ -542,7 +571,7 @@ class QueryCreator {
 					. self::$or_like . self::$not_like . self::$or_not_like . self::$limit;
 				break;
 		}
-		//exit($query);
+		
 		$query = self::sqlRegulator($query);
 		var_dump($query);
 		self::emptySqlVars();

@@ -1,5 +1,18 @@
-<?php namespace Db\drivers\My;
+<?php
 
+namespace Db\drivers\My;
+
+/**
+ * @package Database Active Record Interface
+ * @author Ahmet ATAY / 2014 November
+ * @version 1.0
+ *
+ * The used of  codeigniter active record class interface
+ * 
+ * See https://github.com/atayahmet/database-active-record-class
+ * for the full documentary.
+ */
+ 
 Interface MysqlInterface
 {
     public static function select($_select = null);
