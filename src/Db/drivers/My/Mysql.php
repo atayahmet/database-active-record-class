@@ -3,8 +3,9 @@
 namespace Db\drivers\My;
 
 /**
- * Database Active Record
- *
+ * @package Database Active Record
+ * @author Ahmet ATAY / 2014 November
+ * @version 1.0
  *
  * Why was heard to have to write such a library might ask.
  * A CMS project I had to do database operations outside the MVC framework I worked on
@@ -16,6 +17,11 @@ namespace Db\drivers\My;
  *
  * See https://github.com/atayahmet/database-active-record-class
  * for the full documentary.
+ * 
+ * @contact:
+ * 	web: http://www.atayahmet.com
+ * 	email: ahmet.atay@hotmail.com
+ * 	github: https://github.com/atayahmet
  */
 
 use Db\drivers\My\MysqlInterface;
@@ -42,7 +48,7 @@ class Mysql implements MysqlInterface {
 	// SELECT AVG()
 	private static $select_avg = '';
 
-	// SELECT SUM
+	// SELECT SUM()
 	private static $select_sum = '';
 
 	// WHERE combination
@@ -388,6 +394,12 @@ class Mysql implements MysqlInterface {
 		return new static;
 	}
 	
+	/**
+	 * Query GROUP BY parameter collectors
+	 *
+	 * @param string/array $field
+	 * @return new static
+	 */
 	public static function group_by($field = false)
 	{
 		if($field){
@@ -403,6 +415,11 @@ class Mysql implements MysqlInterface {
 		return new static;
 	}
 	
+	/**
+	 * Query DISTINCT parameter
+	 *
+	 * @return new static
+	 */
 	public static function distinct()
 	{
 		self::$distinct = ' DISTINCT ';
@@ -410,6 +427,13 @@ class Mysql implements MysqlInterface {
 		return new static;
 	}
 	
+	/**
+	 * Query HAVING parameter collectors
+	 *
+	 * @param string/array $field
+	 * @param string/array $field
+	 * @return new static
+	 */
 	public static function having()
 	{
 		$args = func_get_args();
@@ -425,6 +449,13 @@ class Mysql implements MysqlInterface {
 		return new static;
 	}
 	
+	/**
+	 * Query HAVING OR parameter collectors
+	 *
+	 * @param string/array $field
+	 * @param string/array $field
+	 * @return new static
+	 */
 	public static function or_having()
 	{
 		$args = func_get_args();
@@ -440,6 +471,13 @@ class Mysql implements MysqlInterface {
 		return new static;
 	}
 	
+	/**
+	 * Query ORDER parameter collectors
+	 *
+	 * @param string/array $field
+	 * @param ASC/DESC/RANDOM $field
+	 * @return new static
+	 */
 	public static function order_by()
 	{
 		$args = func_get_args();
@@ -451,6 +489,12 @@ class Mysql implements MysqlInterface {
 		return new static;
 	}
 	
+	/**
+	 * Query table decisive
+	 *
+	 * @param string $table
+	 * @return new static
+	 */
 	public static function from($table = null)
 	{
 		self::$table = $table;
@@ -458,6 +502,13 @@ class Mysql implements MysqlInterface {
 		return new static;
 	}
 	
+	/**
+	 * Query LIMIT features
+	 *
+	 * @param integer $_limit
+	 * @param integer $_offset for skip row (optional)
+	 * @return new static
+	 */
 	public static function limit($_limit = null, $_offset = null)
 	{
 		self::$limit = $_limit;
@@ -469,6 +520,12 @@ class Mysql implements MysqlInterface {
 		return new static;
 	}
 	
+	/**
+	 * For skip data
+	 *
+	 * @param integer $_offset for skip row
+	 * @return new static
+	 */
 	public static function offset($_offset = null)
 	{
 		self::$offset = $_offset;
@@ -476,6 +533,14 @@ class Mysql implements MysqlInterface {
 		return new static;
 	}
 	
+	/**
+	 * parameter collectors for JOIN actions
+	 *
+	 * @param string $table
+	 * @param string $compare
+	 * @param string $type (optional)
+	 * @return new static
+	 */
 	public static function join($table = false, $compare = false, $type = 'inner')
 	{
 		preg_match('/(.*?)(\s+)(.*?)/',$table,$matches);
@@ -489,13 +554,18 @@ class Mysql implements MysqlInterface {
 		return new static;
 	}
 	
+	/**
+	 * Will run select queries
+	 *
+	 * @param string/array $table
+	 * @return new static
+	 */
 	public static function get($table = false)
 	{
 		if(empty(self::$table)){
 			self::$table = self::dbprefix($table);
 		}
 		
-		//Exception::test();
 		$criterion = self::getCriterion(
 						array(
 							'select',
@@ -528,10 +598,19 @@ class Mysql implements MysqlInterface {
 		
 		self::$query = QR::get($criterion);
 		self::execute();
-		//var_dump(self::$query);
+		
 		return clone new static;
 	}
-
+	
+	/**
+	 * will make of the get and the where methods
+	 *
+	 * @param string $table
+	 * @param string/array $where
+	 * @param integer $limit (optional)
+	 * @param integer $offset (optional)
+	 * @return new static
+	 */
 	public static function get_where($table = false, $where = false, $limit = false, $offset = false)
 	{
 		if($table){
@@ -564,6 +643,14 @@ class Mysql implements MysqlInterface {
 		}
 	}
 	
+	/**
+	 * Control parameters
+	 *
+	 * @type internal method
+	 * @param string $table
+	 * @param array $data
+	 * @return bool
+	 */
 	private static function checkParameterType($table = false, $data = false)
 	{
 		try {
@@ -586,6 +673,12 @@ class Mysql implements MysqlInterface {
 		}
 	}
 	
+	/**
+	 * Will run insert queries
+	 *
+	 * @param string $table
+	 * @param array $data
+	 */
 	public static function insert($table = false, $data = false)
 	{
 		if(self::checkParameterType($table, $data)){
@@ -613,6 +706,13 @@ class Mysql implements MysqlInterface {
 		}
 	}
 	
+	/**
+	 * Will run insert multi-data to database. it's run the single query 
+	 *
+	 * @param string $table
+	 * @param array $data
+	 * @return bool
+	 */
 	public static function insert_batch($table = false, $data = false)
 	{
 		if(self::checkParameterType($table, $data)){
@@ -625,6 +725,14 @@ class Mysql implements MysqlInterface {
 		}
 	}
 	
+	/**
+	 * Will run update queries
+	 *
+	 * @param string $table
+	 * @param array $data
+	 * @param string/array $where (optional)
+	 * @return void
+	 */
 	public static function update($table = false, $data = false, $where = false)
 	{
 		if(self::checkParameterType($table, $data)){
@@ -667,6 +775,14 @@ class Mysql implements MysqlInterface {
 		}
 	}
 	
+	/**
+	 * Will run update multi-data at database. it's run the single query 
+	 *
+	 * @param string $table
+	 * @param array $data
+	 * @param string $refColumn
+	 * @return void
+	 */
 	public static function update_batch($table = false, $data = array(), $refColumn = false)
 	{
 		try{
@@ -705,7 +821,13 @@ class Mysql implements MysqlInterface {
 			echo(ErrorCatcher::fire($excParm));
 		}
 	}
-
+	
+	/**
+	 * Will run delete query 
+	 *
+	 * @param string $table
+	 * @return void
+	 */
 	public static function delete($table = false)
 	{
 		try {
@@ -747,12 +869,24 @@ class Mysql implements MysqlInterface {
 			echo(ErrorCatcher::fire($excParm));
 		}
 	}
-
+	
+	/**
+	 * All data will delete from table
+	 *
+	 * @param string $table
+	 * @return void
+	 */
 	public static function empty_table($table = false)
 	{
 		self::delete($table);
 	}
-
+	
+	/**
+	 * will run native query
+	 *
+	 * @param string $sql
+	 * @return new static
+	 */
 	public static function query($sql = null)
 	{
 		self::$query = $sql;
@@ -761,6 +895,14 @@ class Mysql implements MysqlInterface {
 		return new static;
 	}
 	
+	/**
+	 * collect data for update
+	 *
+	 * @param string $arg1
+	 * @param string/integer $arg2
+	 * @param array $arg1
+	 * @return new static
+	 */
 	public static function set()
 	{
 		$args = func_get_args();
@@ -779,7 +921,11 @@ class Mysql implements MysqlInterface {
 		
 		return new static;
 	}
-	
+	/**
+	 * Will take the last insert id
+	 *
+	 * @return integer
+	 */
 	public static function insert_id()
 	{
 		self::$query = "SELECT LAST_INSERT_ID() as last_insert_id";
@@ -790,6 +936,12 @@ class Mysql implements MysqlInterface {
 		return $lastId == '0' ? null : $lastId;
 	}
 	
+	/**
+	 * Data counter with the where criteria
+	 *
+	 * @param sitring $table
+	 * @return integer
+	 */
 	public static function count_all_results($table = false)
 	{
 		self::$select[] = 'SQL_CALC_FOUND_ROWS *';
@@ -824,6 +976,12 @@ class Mysql implements MysqlInterface {
 		return isset($result['total']) ? $result['total'] : 0;
 	}
 	
+	/**
+	 * Will count all data  without the where criteria
+	 *
+	 * @param string $table
+	 * @return integer
+	 */
 	public static function count_all($table = false)
 	{
 		self::$select[] = 'SQL_CALC_FOUND_ROWS *';
@@ -847,6 +1005,13 @@ class Mysql implements MysqlInterface {
 		return isset($result['total']) ? $result['total'] : 0;
 	}
 	
+	/**
+	 * Create all query criteria
+	 *
+	 * @type internal method
+	 * @param string/array $_criterion
+	 * @return array
+	 */
 	private static function getCriterion($_criterion)
 	{
 		$criterion = array();
@@ -867,6 +1032,12 @@ class Mysql implements MysqlInterface {
 		return $criterion;
 	}
 	
+	/**
+	 * executes the query
+	 *
+	 * @type internal method
+	 * @return void
+	 */
 	protected static function execute()
 	{
 		try {
@@ -903,6 +1074,12 @@ class Mysql implements MysqlInterface {
 		self::emptySqlVars();
 	}
 	
+	/**
+	 * Create prefixes  with the table name
+	 *
+	 * @param string $table
+	 * @return void
+	 */
 	public static function dbprefix($table = null)
 	{
 		if(!is_null($table) && preg_match('/' . preg_quote(self::$dbconf['dbprefix']) . '(.*?)/', $table) < 1){
@@ -912,11 +1089,22 @@ class Mysql implements MysqlInterface {
 		return $table;
 	}
 	
+	/**
+	 * its total rows access  of the results
+	 *
+	 * @return integer
+	 */
 	public static function num_rows()
 	{
 		return mysql_num_rows(self::$qResult);
 	}
 	
+	/**
+	 * It's access with sort id at query results
+	 *
+	 * @param integer $num
+	 * @return object
+	 */
 	public static function row($num = 0)
 	{
 		$result = self::result();
@@ -926,6 +1114,12 @@ class Mysql implements MysqlInterface {
 		}
 	}
 	
+	/**
+	 * It's access with sort id at query results
+	 *
+	 * @param integer $num
+	 * @return array
+	 */
 	public static function row_array($num = 0)
 	{
 		$result = self::result_array();
@@ -935,6 +1129,11 @@ class Mysql implements MysqlInterface {
 		}
 	}
 	
+	/**
+	 * Results get as object
+	 *
+	 * @return object
+	 */
 	public static function result()
 	{
 		$i = 0;
@@ -962,6 +1161,11 @@ class Mysql implements MysqlInterface {
 		return $ResultObj;
 	}
 	
+	/**
+	 * Results get as array
+	 *
+	 * @return array
+	 */
 	public static function result_array()
 	{
 		if(self::$qResult){
@@ -990,16 +1194,32 @@ class Mysql implements MysqlInterface {
 		}
 	}
 	
+	/**
+	 * Take affected row count
+	 *
+	 * @return integer
+	 */
 	public static function affected_rows()
 	{
 		return mysql_affected_rows();
 	}
 	
+	/**
+	 * Generate database connections
+	 * 
+	 * @param array $config
+	 * @return void
+	 */
 	public static function init(&$config)
 	{
 		self::$dbconf = $config;
 	}
 	
+	/**
+	 * All variables reset for new query
+	 * 
+	 * @return void
+	 */
 	protected static function emptySqlVars()
 	{
 		self::$select = array();
@@ -1032,7 +1252,12 @@ class Mysql implements MysqlInterface {
 		self::$offset = '';
 		self::$table = '';
 	}
-
+	
+	/**
+	 * Close database connection
+	 * 
+	 * @return void
+	 */
 	protected static function dbConnectionClose()
 	{
 		if(!self::$dbClosed){
