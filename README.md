@@ -185,8 +185,6 @@ $result = DB::where('city','Istanbul')->get('users');
 print_r $result->result_array();
 ```
 
-Where you can pass parameters to the method in 2 ways.
-
 **Method 2:**
 ```sh
 $result = DB::where(array('city' => 'Istanbul'))->get('users');
@@ -207,6 +205,24 @@ print_r $result->result_array();
 ```
 ```sh
 $result = DB::where(array('age <>' => 18))->get('users');
+
+print_r $result->result_array();
+```
+
+**Method 3:**
+```sh
+$result = DB::where("city => 'Istanbul'")->get('users');
+
+print_r $result->result_array();
+```
+
+suc as.
+
+If we want we can create a query like:
+```sh
+$result = DB::where('id',1)
+	->where(array('city' => 'Istanbul'))
+	->where("age <> '18'")->get('users');
 
 print_r $result->result_array();
 ```
