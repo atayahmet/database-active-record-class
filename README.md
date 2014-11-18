@@ -107,6 +107,7 @@ DB::select('examle_type.*')->get('example_type');
 DB::select('example_type.id');
 DB::select('example_type.name')->get('example_type');
 ```
+<br />
 **SELECT MAX()**
 
 ```sh
@@ -114,7 +115,7 @@ $result = DB::select_max('id')->get('example_type');
 
 echo $result->row()->id;
 ```
-
+<br />
 **SELECT MIN()**
 
 ```sh
@@ -122,6 +123,7 @@ $result = DB::select_max('id')->get('example_type');
 
 echo $result->row()->id;
 ```
+<br />
 **SELECT AVG()**
 
 ```sh
@@ -129,7 +131,7 @@ $result = DB::select_avg('age')->get('example_type');
 
 echo $result->row()->age;
 ```
-
+<br />
 **SELECT SUM()**
 
 ```sh
@@ -137,7 +139,7 @@ $result = DB::select_sum('total')->get('example_type');
 
 echo $result->row()->total;
 ```
-
+<br />
 **DISTINCT**
 
 ```sh
@@ -226,14 +228,13 @@ $result = DB::where('id',1)
 
 print_r $result->result_array();
 ```
-
-**or_where:**
+<br />
+**or_where():**
 ```sh
-$result = DB::where('id',1)
-	->or_where('age',18)->get('users');
+$result = DB::where('id',1)->or_where('age',18)->get('users');
 ```
-
-**where_in:**
+<br />
+**where_in():**
 ```sh
 $result = DB::where_in('age',18)->get('users');
 ```
@@ -244,22 +245,58 @@ $result = DB::where_in('age',array(18,20,22,23))->get('users');
 > **Note:**
 > This combination can be used on all **where_in**
 
-**or_where_in:**
+<br />
+**or_where_in():**
 ```sh
 $result = DB::where('city','Istanbul')->or_where_in('age',18)->get('users');
 ```
-
-**where_not_in:**
+<br />
+**where_not_in():**
 ```sh
 $result = DB::where_not_in('age',18)->get('users');
 ```
-**or_where_not_in:**
+<br />
+**or_where_not_in():**
 ```sh
 $result = DB::where('city','Istanbul')->or_where_not_in('age',18)->get('users');
 ```
 <br />
 
-**or_where_not_in:**
+**or_where_not_in():**
 ```sh
 $result = DB::where('city','Istanbul')->or_where_not_in('age',18)->get('users');
+```
+
+<br />
+
+**or_where_not_in():**
+```sh
+$result = DB::where('city','Istanbul')->or_where_not_in('age',18)->get('users');
+```
+
+
+**LIKE COMBINATION**
+--
+
+**like():**
+```sh
+$result = DB::like('name','Ali')->get('users');
+```
+```sh
+$result = DB::like(array('name' => 'Ali', 'city' => Ist))->get('users');
+```
+
+**You can also locate the reference point by sending a third parameter:**
+```sh
+before:
+	$result = DB::like('name', 'Ali','before')->get('users');
+	
+	print out:
+	//users.name LIKE '%Ali'
+
+after:
+	$result = DB::like('name', 'Ali','after')->get('users');
+
+	print out:
+	//users.name LIKE 'Ali%'
 ```
