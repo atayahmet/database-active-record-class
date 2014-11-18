@@ -108,7 +108,7 @@ DB::select('example_type.id');
 DB::select('example_type.name')->get('example_type');
 ```
 <br />
-**SELECT MAX()**
+**select_max():**
 
 ```sh
 $result = DB::select_max('id')->get('example_type');
@@ -116,7 +116,7 @@ $result = DB::select_max('id')->get('example_type');
 echo $result->row()->id;
 ```
 <br />
-**SELECT MIN()**
+**select_min():**
 
 ```sh
 $result = DB::select_max('id')->get('example_type');
@@ -124,7 +124,7 @@ $result = DB::select_max('id')->get('example_type');
 echo $result->row()->id;
 ```
 <br />
-**SELECT AVG()**
+**select_avg():**
 
 ```sh
 $result = DB::select_avg('age')->get('example_type');
@@ -132,7 +132,7 @@ $result = DB::select_avg('age')->get('example_type');
 echo $result->row()->age;
 ```
 <br />
-**SELECT SUM()**
+**select_sum():**
 
 ```sh
 $result = DB::select_sum('total')->get('example_type');
@@ -140,13 +140,23 @@ $result = DB::select_sum('total')->get('example_type');
 echo $result->row()->total;
 ```
 <br />
-**DISTINCT**
+**distinct():**
 
 ```sh
 $result = DB::distinct('city')->get('example_type');
 
 echo $result->row()->city;
 ```
+**FROM:**
+--
+**from():**
+
+```sh
+$result = DB::select('*')->from('example_table')->get();
+
+echo $result->row()->total;
+```
+
 **WHERE**
 --
 ```sh
