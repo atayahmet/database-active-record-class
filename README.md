@@ -8,13 +8,6 @@ Database active record
 > - Codeigniter active record class interface used
 > - These library use simple and fast of
 
-
-Jump to topic:
-
-[TOC]
-
-
-
 Let's start!
 ----
 
@@ -70,3 +63,16 @@ We can define the connection as we want it that way.
 
 > **Note:**
 > ***mysql*** needs to be defined for the identification of the considered prospective.
+
+We first make the database connection
+---
+
+
+Add our workspace our library
+```
+use Db\Query as DB;
+```
+
+We install the library and also have set a alias. I chose the DB alias.
+
+**A simple database query:**
