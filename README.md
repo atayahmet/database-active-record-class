@@ -300,3 +300,18 @@ after:
 	print out:
 	//users.name LIKE 'Ali%'
 ```
+<br />
+**or_like():**
+```sh
+$result = DB::like('name','Ali')->or_like('city','Ist')->get('users');
+```
+<br />
+**not_like():**
+```sh
+$result = DB::not_like('name','Ali')->get('users');
+```
+<br />
+**or_not_like():**
+```sh
+$result = DB::not_like('name','Ali')->or_not_like('city','Ist')->get('users');
+```
