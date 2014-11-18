@@ -19,7 +19,7 @@ First let's start with the database settings.
 database configuration files in the **Db** folders -> **config.php**
 
 
-```
+```sh
 $current = 'mysql:connect1';
 
 $db = array(
@@ -51,6 +51,7 @@ Up when I want to define a second database connection settings you need to do th
 			'dbprefix' => ''
 
 		)
+		
 ```
 
 and my **$current** variable have been:
