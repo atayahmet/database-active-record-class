@@ -145,3 +145,36 @@ $result = DB::distinct('city')->get('example_type');
 
 echo $result->row()->city;
 ```
+**WHERE**
+--
+```sh
+$result = DB::where('city','Istanbul')->get('users');
+
+print_r $result->result_array();
+```
+
+Where you can pass parameters to the method in 2 ways.
+
+**Method 1:**
+```sh
+$result = DB::where('city !=','Istanbul')->get('users');
+
+print_r $result->result_array();
+```
+
+```sh
+$result = DB::where('age >',19)->get('users');
+
+print_r $result->result_array();
+```
+
+```sh
+$result = DB::where('age <',19)->get('users');
+
+print_r $result->result_array();
+```
+```sh
+$result = DB::where('age <>',18)->get('users');
+
+print_r $result->result_array();
+```
