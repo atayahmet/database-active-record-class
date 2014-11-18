@@ -226,3 +226,22 @@ $result = DB::where('id',1)
 
 print_r $result->result_array();
 ```
+
+**or_where:**
+```sh
+$result = DB::where('id',1)
+	->or_where('age',18)->get('users');
+```
+
+**where_in:**
+```sh
+$result = DB::where_in('age',18)->get('users');
+```
+a different use:
+```sh
+$result = DB::where_in('age',array(18,20,22,23))->get('users');
+```
+[**or_where_in:**](#or_where_in)
+```sh
+$result = DB::where('city','Istanbul')->or_where_in('age',18)->get('users');
+```
