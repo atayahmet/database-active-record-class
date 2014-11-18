@@ -257,7 +257,7 @@ $result = DB::where_not_in('age',18)->get('users');
 ```sh
 $result = DB::where('city','Istanbul')->or_where_not_in('age',18)->get('users');
 ```
-<hr>
+<br />
 
 **or_where_not_in:**
 ```sh
