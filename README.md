@@ -315,3 +315,57 @@ $result = DB::not_like('name','Ali')->get('users');
 ```sh
 $result = DB::not_like('name','Ali')->or_not_like('city','Ist')->get('users');
 ```
+
+**ORDER BY**
+--
+**order_by():**
+```sh
+$result = DB::->order_by('name','DESC')->get('users');
+```
+<br />
+**order_by('random'):**
+```sh
+$result = DB::->order_by('name','random')->get('users');
+```
+
+
+**GROUP BY**
+--
+
+**group_by():**
+```sh
+$result = DB::group_by('name')->get('users');
+```
+
+**HAVING**
+--
+**having():**
+```sh
+$result = DB::group_by('name')->having("name = 'Ali'")->get('users');
+```
+
+<br />
+**or_having():**
+```sh
+$result = DB::group_by('name')
+	->having("name = 'Ali'")->or_having('age',18)->get('users');
+```
+
+**LIMIT**
+--
+**limit():**
+```sh
+$result = DB::limit(1)->get('users');
+```
+
+instead of the **offset** method is also useful for:
+```sh
+$result = DB::limit(2,1)->get('users');
+```
+
+**OFFSET (skip data)**
+--
+**offset():**
+```sh
+$result = DB::offset(5)->get('users');
+```
