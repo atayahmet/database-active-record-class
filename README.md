@@ -107,6 +107,11 @@ DB::select('examle_type.*')->get('example_type');
 DB::select('example_type.id');
 DB::select('example_type.name')->get('example_type');
 ```
+
+
+----------
+
+
 **SELECT MAX()**
 
 ```sh
@@ -115,6 +120,10 @@ $result = DB::select_max('id')->get('example_type');
 echo $result->row()->id;
 ```
 
+
+----------
+
+
 **SELECT MIN()**
 
 ```sh
@@ -122,6 +131,11 @@ $result = DB::select_max('id')->get('example_type');
 
 echo $result->row()->id;
 ```
+
+
+----------
+
+
 **SELECT AVG()**
 
 ```sh
@@ -129,6 +143,10 @@ $result = DB::select_avg('age')->get('example_type');
 
 echo $result->row()->age;
 ```
+
+
+----------
+
 
 **SELECT SUM()**
 
@@ -138,6 +156,10 @@ $result = DB::select_sum('total')->get('example_type');
 echo $result->row()->total;
 ```
 
+
+----------
+
+
 **DISTINCT**
 
 ```sh
@@ -145,6 +167,11 @@ $result = DB::distinct('city')->get('example_type');
 
 echo $result->row()->city;
 ```
+
+
+----------
+
+
 **WHERE**
 --
 ```sh
@@ -227,11 +254,19 @@ $result = DB::where('id',1)
 print_r $result->result_array();
 ```
 
+
+----------
+
+
 **or_where:**
 ```sh
 $result = DB::where('id',1)
 	->or_where('age',18)->get('users');
 ```
+
+
+----------
+
 
 **where_in:**
 ```sh
@@ -241,7 +276,41 @@ a different use:
 ```sh
 $result = DB::where_in('age',array(18,20,22,23))->get('users');
 ```
-[**or_where_in:**](#or_where_in)
+> **Note:**
+> This combination can be used on all **where_in**
+
+
+----------
+
+
+**or_where_in:**
 ```sh
 $result = DB::where('city','Istanbul')->or_where_in('age',18)->get('users');
+```
+
+
+----------
+
+
+**where_not_in:**
+```sh
+$result = DB::where_not_in('age',18)->get('users');
+```
+
+
+----------
+
+
+**or_where_not_in:**
+```sh
+$result = DB::where('city','Istanbul')->or_where_not_in('age',18)->get('users');
+```
+<i class="icon-cog"></i>
+
+----------
+
+
+**or_where_not_in:**
+```sh
+$result = DB::where('city','Istanbul')->or_where_not_in('age',18)->get('users');
 ```
