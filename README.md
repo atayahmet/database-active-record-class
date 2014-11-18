@@ -1,4 +1,4 @@
-Database active record class
+Database active record
 ===================
 
 > **Available fields:**
@@ -14,6 +14,7 @@ Let's start!
 First let's start with the database settings.
 
 database configuration files in the **Db** folders -> **config.php**
+
 
 ```
 $current = 'mysql:connect1';
@@ -31,3 +32,27 @@ $db = array(
 	)
 );
 ```
+
+The **$current** variable is the driver you want to use as the active and allows you to use the database connection.
+
+**Example:**
+Up when I want to define a second database connection settings you need to do the following.
+
+```
+	'connect2' => array(
+			'hostname' => 'localhost',
+			'username' => 'root',
+			'password' => '',
+			'database' => '',
+			'dbprefix' => ''
+
+		)
+```
+
+and my **$current** variable have been:
+
+```
+$current = 'mysql:connect2'; 
+```
+
+We can define the connection as we want it that way.
