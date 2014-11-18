@@ -153,7 +153,7 @@ $result = DB::where('city','Istanbul')->get('users');
 print_r $result->result_array();
 ```
 
-Where you can pass parameters to the method in 2 ways.
+Where you can pass parameters to the method in 3 ways.
 
 **Method 1:**
 ```sh
@@ -175,6 +175,38 @@ print_r $result->result_array();
 ```
 ```sh
 $result = DB::where('age <>',18)->get('users');
+
+print_r $result->result_array();
+```
+
+```sh
+$result = DB::where('city','Istanbul')->get('users');
+
+print_r $result->result_array();
+```
+
+Where you can pass parameters to the method in 2 ways.
+
+**Method 2:**
+```sh
+$result = DB::where(array('city' => 'Istanbul'))->get('users');
+
+print_r $result->result_array();
+```
+
+```sh
+$result = DB::where(array('age >' => 19))->get('users');
+
+print_r $result->result_array();
+```
+
+```sh
+$result = DB::where(array('age <' => 19))->get('users');
+
+print_r $result->result_array();
+```
+```sh
+$result = DB::where(array('age <>' => 18))->get('users');
 
 print_r $result->result_array();
 ```
