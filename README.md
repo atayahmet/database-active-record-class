@@ -107,3 +107,10 @@ DB::select('examle_type.*')->get('example_type');
 DB::select('example_type.id');
 DB::select('example_type.name')->get('example_type');
 ```
+**SELECT MAX()**
+--
+```sh
+$result = DB::select_max('total')->get('example_type');
+
+echo $result->row()->total;
+```
