@@ -93,24 +93,32 @@ DB::select('*')->get('example_table');
 **SELECT:**
 --
 
-**Method 1:**
+**Use 1:**
 ```sh
 DB::select('*')->get('example_table');
 ```
 
-**Method 2:**
+**Use 2:**
 ```sh
 DB::select('examle_type.*')->get('example_type');
 ```
-**Method 3:**
+**Use 3:**
 ```sh
 DB::select('example_type.id');
 DB::select('example_type.name')->get('example_type');
 ```
 **SELECT MAX()**
---
-```sh
-$result = DB::select_max('total')->get('example_type');
 
-echo $result->row()->total;
+```sh
+$result = DB::select_max('id')->get('example_type');
+
+echo $result->row()->id;
+```
+
+**SELECT MIN()**
+
+```sh
+$result = DB::select_max('id')->get('example_type');
+
+echo $result->row()->id;
 ```
