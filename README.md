@@ -76,3 +76,28 @@ use Db\Query as DB;
 We install the library and also have set a alias. I chose the DB alias.
 
 **A simple database query:**
+
+```
+DB::select('*');
+DB::get('example_table');
+```
+
+We questioned directly above our table without specifying any criteria query.
+We can do the same query in the following way:
+
+```
+DB::select('*')->get('example_table');
+```
+
+**SELECT:**
+```
+Method 1:
+DB::select('*')->get('example_table');
+
+Method 2:
+DB::select('examle_type.*')->get('example_type');
+
+Method 3:
+DB::select('example_type.id');
+DB::select('example_type.name')->get('example_type');
+```
