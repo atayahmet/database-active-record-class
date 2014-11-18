@@ -8,8 +8,18 @@ Database active record
 > - Codeigniter active record class interface used
 > - These library use simple and fast of
 
+
+Jump to topic:
+
+[TOC]
+
+
+
 Let's start!
 ----
+
+Database Configuration
+---
 
 First let's start with the database settings.
 
@@ -36,6 +46,7 @@ $db = array(
 The **$current** variable is the driver you want to use as the active and allows you to use the database connection.
 
 **Example:**
+
 Up when I want to define a second database connection settings you need to do the following.
 
 ```
@@ -56,3 +67,6 @@ $current = 'mysql:connect2';
 ```
 
 We can define the connection as we want it that way.
+
+> **Note:**
+> ***mysql*** needs to be defined for the identification of the considered prospective.
