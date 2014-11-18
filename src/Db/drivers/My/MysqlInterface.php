@@ -20,6 +20,7 @@ Interface MysqlInterface
 	public static function select_min($field = false);
 	public static function select_avg($field = false);
 	public static function select_sum($field = false);
+	public static function distinct();
     public static function where($_where = null);
 	public static function where_in();
 	public static function or_where_in();
@@ -31,7 +32,6 @@ Interface MysqlInterface
 	public static function not_like($field = false, $value = false, $pos = 'both');
 	public static function or_not_like($field = false, $value = false, $pos = 'both');
 	public static function group_by($field = false);
-	public static function distinct();
 	public static function having();
 	public static function or_having();
 	public static function order_by();
@@ -44,7 +44,6 @@ Interface MysqlInterface
 	public static function result();
 	public static function result_array();
 	public static function count_all_results($table = false);
-	public static function dump($type= 'html');
 	public static function count_all($table = false);
 	public static function join($table = false, $compare = false, $type = 'inner join');
 	public static function get_where($table = false, $where = false, $limit = false, $offset = false);
@@ -58,4 +57,5 @@ Interface MysqlInterface
 	public static function set();
 	public static function insert_id();
 	public static function query($sql = null);
+	public static function dump($type= 'html');
 }

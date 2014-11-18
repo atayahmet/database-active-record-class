@@ -122,3 +122,26 @@ $result = DB::select_max('id')->get('example_type');
 
 echo $result->row()->id;
 ```
+**SELECT AVG()**
+
+```sh
+$result = DB::select_avg('age')->get('example_type');
+
+echo $result->row()->age;
+```
+
+**SELECT SUM()**
+
+```sh
+$result = DB::select_sum('total')->get('example_type');
+
+echo $result->row()->total;
+```
+
+**DISTINCT**
+
+```sh
+$result = DB::distinct('city')->get('example_type');
+
+echo $result->row()->city;
+```
