@@ -91,14 +91,19 @@ DB::select('*')->get('example_table');
 ```
 
 **SELECT:**
+--
+
+**Method 1:**
 ```sh
-Method 1:
 DB::select('*')->get('example_table');
+```
 
-Method 2:
+**Method 2:**
+```sh
 DB::select('examle_type.*')->get('example_type');
-
-Method 3:
+```
+**Method 3:**
+```sh
 DB::select('example_type.id');
 DB::select('example_type.name')->get('example_type');
 ```
