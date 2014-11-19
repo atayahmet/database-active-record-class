@@ -390,7 +390,7 @@ First example:
 ```sh
 DB::select('t1.name, t2.city')
 	->from(DB::dbprefix('users') . ' t1')
-	->join(DB::dbprefix('cities') . ' t2',"t2.id = t1.city_id",'left')
+	->join(DB::dbprefix('cities') . ' t2',"t2.id = t1.city_id",'inner')
 	->where('t1.age >',18)
 	->get();
 ```
@@ -412,9 +412,41 @@ Let's make different example:
 ```sh
 DB::select('t1.name, t2.city')
 	->from(DB::dbprefix('users') . ' t1')
-	->join(DB::dbprefix('cities') . ' t2',"t2.id = t1.city_id",'left')
+	->join(DB::dbprefix('cities') . ' t2',"t2.id = t1.city_id",'inner')
 	->join(DB::dbprefix('countries') . ' t3','t3.id = t2.country_id','left')
 	->where('t1.age <',30)
 	->where('t1.age >',18)
 	->get();
+```
+**INSERT**
+--
+There are several ways to add data to the table.
+
+**First:**
+```sh
+DB::insert('users',array(
+		'name' => 'Ali',
+		'city' => 'Istanbul',
+		'age' => 21
+	)
+)
+```
+<br />
+**Another use:**
+```sh
+DB::set('name','Ali');
+DB::set('city','Istanbul');
+DB::set('age','18');
+DB::insert('users');
+```
+<br >
+**and another use than:**
+```sh
+class User {
+	public $name = 'Ali';
+	public $city = 'Istanbul';
+	public $age = 18;
+}
+
+DB::insert('users', new User());
 ```
