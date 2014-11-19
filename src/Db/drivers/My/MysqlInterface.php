@@ -37,15 +37,8 @@ Interface MysqlInterface
 	public static function order_by();
 	public static function limit($_limit = null, $_offset = null);
 	public static function offset($_offset);
-	public static function num_rows();
-	public static function dbprefix($table = null);
-	public static function row($num);
-	public static function row_array($num);
-	public static function result();
-	public static function result_array();
-	public static function count_all_results($table = false);
-	public static function count_all($table = false);
 	public static function join($table = false, $compare = false, $type = 'inner join');
+	public static function count_all($table = false);
 	public static function get_where($table = false, $where = false, $limit = false, $offset = false);
 	public static function insert($table = false, $data = false);
 	public static function insert_batch($table = false, $data = false);
@@ -53,9 +46,16 @@ Interface MysqlInterface
 	public static function update_batch($table = false, $data = false, $refColumn = false);
 	public static function delete($table = false);
 	public static function empty_table($table = false);
-	public static function affected_rows();
 	public static function set();
 	public static function insert_id();
 	public static function query($sql = null);
+	public static function num_rows();
+	public static function dbprefix($table = null);
+	public static function row($num);
+	public static function row_array($num);
+	public static function result();
+	public static function result_array();
+	public static function count_all_results($table = false);
+	public static function affected_rows();
 	public static function dump($type= 'html');
 }
