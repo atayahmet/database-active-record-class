@@ -43,8 +43,8 @@ Interface MysqlInterface
 	public static function update($table = false, $data = false, $where = false);
 	public static function update_batch($table = false, $data = false, $refColumn = false);
 	public static function delete($table = false);
-	public static function count_all_results($table = false);
 	public static function count_all($table = false);
+	public static function count_all_results($table = false);
 	public static function get_where($table = false, $where = false, $limit = false, $offset = false);
 	public static function empty_table($table = false);
 	public static function set();

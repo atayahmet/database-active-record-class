@@ -533,6 +533,8 @@ DB::update('users');
 ```
 <br />
 **update_batch():**
+
+Sometimes we want to do multiple updates.
 ```sh
 $data = array(
 	array(
@@ -557,3 +559,31 @@ $data = array(
 
 DB::update_batch('users',data, 'id');
 ```
+
+**DELETE**
+--
+**delete():**
+```sh
+DB::where('id',1)->delete('users');
+```
+
+**COUNT**
+--
+Get the number of records in the table are also able to do a fairly simple way.
+
+**count_all():**
+
+```sh
+DB::count_all('users');
+```
+This method will return us to the number of records in the specified table
+
+<br />
+**count_all_results():**
+```sh
+DB::from('users')
+	->where('age >',18)
+	->or_where('city','Istanbul')
+	->count_all_results();
+```
+> **Note:** as much as possible when you want to use this method of total records
