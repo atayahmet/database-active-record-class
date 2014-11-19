@@ -379,3 +379,42 @@ $result = DB::limit(2,1)->get('users');
 ```sh
 $result = DB::offset(5)->get('users');
 ```
+
+**JOIN TABLES**
+--
+
+
+As simple as possible to join tables.
+
+First example:
+```sh
+DB::select('t1.name, t2.city')
+	->from(DB::dbprefix('users') . ' t1')
+	->join(DB::dbprefix('cities') . ' t2',"t2.id = t1.city_id",'left')
+	->where('t1.age >',18)
+	->get();
+```
+We combine the member table where the city table. And we have defined the coming of the age of 18 and where the.
+> **Note:**
+> We have sent the left marked as the third parameter in the join method.
+> Parameters that are available here:
+> 
+ - **inner** (INNER JOIN)
+ - **left** (LEFT JOIN)
+ - **right** (RIGHT JOIN)
+ - **left outer join** (LEFT OUTER JOIN)
+ - **right outer join** (RIGHT OUTER JOIN)
+ - **cross** (CROSS JOIN)
+
+**inner** parameters will work as default.
+
+Let's make different example:
+```sh
+DB::select('t1.name, t2.city')
+	->from(DB::dbprefix('users') . ' t1')
+	->join(DB::dbprefix('cities') . ' t2',"t2.id = t1.city_id",'left')
+	->join(DB::dbprefix('countries') . ' t3','t3.id = t2.country_id','left')
+	->where('t1.age <',30)
+	->where('t1.age >',18)
+	->get();
+```
