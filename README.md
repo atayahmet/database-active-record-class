@@ -659,6 +659,7 @@ print_r $result->row(5);
 ```
 <br />
 **row_array():**
+
 The result will be the array.
 ```sh
 $result = DB::get('users');
@@ -670,4 +671,60 @@ or it can be done in specifying the number of rows you want to access
 print_r $result->row_array(5);
 ```
 
-#### <i class="icon-file"></i>
+Processing the query results
+--
+
+If we want to use queries in a loop we run it we can do in two ways.
+
+**result():**
+
+```sh
+$result = DB::get('users');
+
+print_r $result->result();
+```
+> **Note:** results will become an object
+
+<br />
+**result_array():**
+
+```sh
+$result = DB::get('users');
+
+print_r $result->result_array();
+```
+> **Note:** results will become an array
+
+<br />
+
+Affected Rows
+--
+**affected_rows():**
+
+```sh
+echo DB::affected_rows();
+```
+
+SQL Dump
+--
+When running under the URL of a page request is sent to all queries will return the string and working duration.
+
+**dump():**
+
+one will give way listed in a table.
+```sh
+echo DB::dump();
+```
+
+If we want we can also take in a number of.
+```sh
+print_r DB::dump('array');
+```
+
+hopefully be helpful to you!
+
+Please errors and parts you do not understand that you can discuss open issues identified under the project.
+
+
+happy coding!
+--
