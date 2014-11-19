@@ -15,6 +15,50 @@ Let's start!
 
 [- We first make the database connection](#we-first-make-the-database-connection)
 
+[- SELECT](#select)
+
+[- FROM](#from)
+
+[- WHERE](#where)
+
+[- LIKE COMBINATION](#like-combination)
+
+[- ORDER BY](#order-by)
+
+[- GROUP BY](#group-by)
+
+[- HAVING](#having)
+
+[- LIMIT](#limit)
+
+[- OFFSET (skip data)](#offset-skip-data)
+
+[- JOIN TABLES](#join-tables)
+
+[- INSERT](#insert)
+
+[- UPDATE](#update)
+
+[- DELETE](#delete)
+
+[- COUNT](#count)
+
+[- Native Query](#native-query)
+
+[- GET](#get)
+
+[- DB PREFIX](#db-prefix)
+
+[- Num Rows](#num-rows)
+
+[- Row](#row)
+
+[- Processing the query results](#processing-the-query-results)
+
+[- Affected Rows](#affected-rows)
+
+[- SQL Dump](#sql-dump)
+
 Database Configuration
 ---
 
