@@ -619,3 +619,55 @@ $offset = 2;
 
 DB::get_where('users',array('id' => 1),$limit,$offset);
 ```
+
+DB PREFIX
+--
+We use our unique method we want to use the prefix table.
+
+```sh
+DB::dbprefix('users');
+```
+
+Num Rows
+--
+We can use it to get the number of rows of query results.
+
+**num_rows():**
+```sh
+$result = DB::get('users');
+
+echo $result->num_rows();
+```
+
+Row
+--
+
+Allows access to a single row in the query results.
+
+**row():**
+
+The result will be the object.
+
+```sh
+$result = DB::get('users');
+
+print_r $result->row();
+```
+or it can be done in specifying the number of rows you want to access
+```sh
+print_r $result->row(5);
+```
+<br />
+**row_array():**
+The result will be the array.
+```sh
+$result = DB::get('users');
+
+print_r $result->row_array();
+```
+or it can be done in specifying the number of rows you want to access
+```sh
+print_r $result->row_array(5);
+```
+
+#### <i class="icon-file"></i>
