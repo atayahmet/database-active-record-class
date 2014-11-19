@@ -422,7 +422,9 @@ DB::select('t1.name, t2.city')
 --
 There are several ways to add data to the table.
 
-**First:**
+**insert():**
+
+First:
 ```sh
 DB::insert('users',array(
 		'name' => 'Ali',
@@ -432,7 +434,7 @@ DB::insert('users',array(
 )
 ```
 <br />
-**Another use:**
+Another use:
 ```sh
 DB::set('name','Ali');
 DB::set('city','Istanbul');
@@ -440,7 +442,7 @@ DB::set('age','18');
 DB::insert('users');
 ```
 <br >
-**and another use than:**
+and another use than:
 ```sh
 class User {
 	public $name = 'Ali';
@@ -449,4 +451,27 @@ class User {
 }
 
 DB::insert('users', new User());
+```
+
+<br />
+**insert_batch():**
+```sh
+DB::insert_batch('users',array(
+		array(
+			'name' => 'Ali',
+			'city' => 'Istanbul',
+			'age' => 21
+		),
+		array(
+			'name' => 'Erkan',
+			'city' => 'Ankara',
+			'age' => 20
+		),
+		array(
+			'name' => 'Emre',
+			'city' => 'Izmir',
+			'age' => 19
+		)
+	)
+)
 ```
