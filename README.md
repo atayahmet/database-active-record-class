@@ -11,6 +11,9 @@ Database active record
 Let's start!
 ----
 
+[- Database Configuration](#database-configuration)
+[- We first make the database connection](#we-first-make-the-database-connection)
+
 Database Configuration
 ---
 
