@@ -587,3 +587,35 @@ DB::from('users')
 	->count_all_results();
 ```
 > **Note:** as much as possible when you want to use this method of total records
+
+Native Query:
+--
+
+if you say you want to run native SQL.
+
+**query():**
+```sh
+DB::query("SELECT * FROM users WHERE age > 18");
+```
+
+GET:
+--
+Is a method that will run our query. If you wish you can send your query table names get method.  If you wish, you can choose the method from.
+
+**get():**
+```sh
+DB::get('users');
+```
+
+or
+```sh
+DB::from('users')->get();
+```
+
+**get_where():**
+```sh
+$limit = 1;
+$offset = 2;
+
+DB::get_where('users',array('id' => 1),$limit,$offset);
+```
