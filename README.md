@@ -441,6 +441,17 @@ DB::set('city','Istanbul');
 DB::set('age','18');
 DB::insert('users');
 ```
+```sh
+DB::set(
+	array(
+		'name' => 'Ali',
+		'city' => 'Istanbul/Turkey',
+		'age' => 18
+	)
+);
+
+DB::insert('users');
+```
 <br >
 and another use than:
 ```sh
@@ -452,6 +463,7 @@ class User {
 
 DB::insert('users', new User());
 ```
+
 
 <br />
 **insert_batch():**
@@ -474,4 +486,74 @@ DB::insert_batch('users',array(
 		)
 	)
 )
+```
+<br />
+**insert_id():**
+
+After adding to retrieve the last record id:
+
+```sh
+DB::insert_id();
+```
+
+**UPDATE**
+--
+Relatively simple processing such as insert, update
+
+**update():**
+```sh
+DB::where('id',1)
+	->update('users',array(
+		'name' => 'Ali',
+		'city' => 'Istanbul/Turkey',
+		'age' => 18
+	)
+)
+```
+
+or
+```sh
+DB::set('name','Ali');
+DB::set('city','Istanbul/Turkey');
+DB::set('age',18);
+DB::update('users');
+```
+
+or
+```sh
+DB::set(
+	array(
+		'name' => 'Ali',
+		'city' => 'Istanbul/Turkey',
+		'age' => 18
+	)
+);
+
+DB::update('users');
+```
+<br />
+**update_batch():**
+```sh
+$data = array(
+	array(
+		'id' => 1,
+		'name' => 'Ali',
+		'city' => 'Izmir',
+		'age' => 19
+	),
+	array(
+		'id' => 2,
+		'name' => 'Ahmet',
+		'city' => 'Bursa',
+		'age' => 21
+	),
+	array(
+		'id' => 3,
+		'name' => 'Adem',
+		'city' => 'Antalya',
+		'age' => 22
+	)
+);
+
+DB::update_batch('users',data, 'id');
 ```
