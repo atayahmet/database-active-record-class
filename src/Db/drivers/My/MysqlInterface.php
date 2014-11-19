@@ -52,9 +52,7 @@ Interface MysqlInterface
 	public static function get($table = false);
 	public static function get_where($table = false, $where = false, $limit = false, $offset = false);
 	public static function dbprefix($table = null);
-	
 	public static function num_rows();
-	
 	public static function row($num);
 	public static function row_array($num);
 	public static function result();
