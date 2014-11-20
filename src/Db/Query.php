@@ -34,7 +34,7 @@ class Query {
 	
 	public static function init($dbConf = false)
 	{
-		include('/../config.php');
+		include(__DIR__ . '/../config.php');
 		
 		try{
 			$current = preg_split('/\:/',$current);
