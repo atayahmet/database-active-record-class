@@ -1,4 +1,4 @@
-<phpunit bootstrap="/../../../vendor/autoload.php" color="true">
+<phpunit color="true">
   <testsuites>
     <testsuite name="Active Record Tests">
     	<file>tests/Db/drivers/My/MysqlTest.php</file>
