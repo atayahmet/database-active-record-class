@@ -30,6 +30,4 @@ class MysqlTest extends \PHPUnit_Framework_TestCase {
 		var_dump($result->result());
 	
 	}
-
-
 }
