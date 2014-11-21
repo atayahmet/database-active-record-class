@@ -465,7 +465,7 @@ class QueryCreator {
 	 */
 	private static function offset($_offset)
 	{
-		if(!is_null($_offset)){
+		if(!empty($_offset)){
 			self::$offset = $_offset;
 			
 			if(!is_null(self::$limit) && !empty(self::$limit)){
