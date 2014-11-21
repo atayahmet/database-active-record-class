@@ -1104,7 +1104,6 @@ class Mysql implements MysqlInterface {
 			mysql_select_db(self::$dbconf['database'], self::$dbLink);
 			mysql_set_charset('utf8',self::$dbLink); 
 			
-			
 			self::$Queries[md5(self::$query)]['query'] = self::$query;
 			
 			$start = microtime();
