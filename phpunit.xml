@@ -1,4 +1,4 @@
-<phpunit color="true">
+<phpunit colors="true">
   <testsuites>
     <testsuite name="Active Record Tests">
     	<file>tests/Db/drivers/My/MysqlTest.php</file>

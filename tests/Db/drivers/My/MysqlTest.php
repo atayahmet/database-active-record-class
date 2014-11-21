@@ -1,15 +1,18 @@
 <?php
 
-namespace Db;
+namespace tests;
+
+require __DIR__ . '/../../../../../../../vendor/autoload.php';
 
 use \Db\Query as DB;
 
 class MysqlTest extends \PHPUnit_Framework_TestCase {
+
 	public function testInsert()
 	{
-		// ilk senaryomuz tabloya yeni kayýt oluþturma
-		// kullanýcý tablosuna bir yeni üye ekliyoruz ve ardýn etkilenen kayýt sayýsýný
-		// UnitTest'e gönderiyoruz
+		// ilk senaryomuz tabloya yeni kayÄ±t oluÅŸturma
+		// kullanÂ¿cÂ¿ tablosuna bir yeni Ã¼ye ekliyoruz ve ardÂ¿ndan etkilenen kayÂ¿t sayÂ¿sÂ¿nÂ¿
+		// UnitTest'e gÃ¶nderiyoruz
 		DB::insert('members',
 			array(
 			'name' 	=> 'Ahmet',
@@ -17,17 +20,27 @@ class MysqlTest extends \PHPUnit_Framework_TestCase {
 			)
 		);
 
-		// sonuç istediðimiz gibimi kontrol ediyoruz.
+		// sonuÃ§ istediÂ¿imiz gibimi kontrol ediyoruz.
 		$this->assertGreaterThan(0, DB::insert_id());
 	}
 
 	public function testUpdate()
 	{
 		// ikinci senaryomuz update metodu.
-		// Tablodaki ilk kaydý guncelleyeceðiz.
-		// Sonrasýnda tekrar etkilenen satýr sayýsý alacaðýz.
-		$result = DB::select('*')->order_by('id','asc')->get('members');
-		var_dump($result->result());
+		// Tablodaki ilk kaydÂ¿ guncelleyeceÂ¿iz.
+		// SonrasÂ¿nda tekrar etkilenen satÂ¿r sayÂ¿sÂ¿ alacaÂ¿Â¿z.
+		$result = DB::select('id')->limit(1)->order_by('id','random')->get('members');
+		
+		// gelen satÄ±r sayÄ±sÄ± bir olmalÄ±
+		$this->assertEquals(1, $result->num_rows());
+		
+		// update metodunu kullanÄ±p test'e hazÄ±rlÄ±yoruz
+		DB::where('id', $result->row()->id)
+			->update('members', array('name' => 'Serdar'));
+		
+		// etkilenen satÄ±r sayÄ±sÄ± TestCase'e gÃ¶nderiliyor
+		$this->assertGreaterThan(0,DB::affected_rows());
 	
 	}
 }
+
