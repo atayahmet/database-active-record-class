@@ -827,9 +827,7 @@ class QueryCreator {
 			}
 			
 			if(preg_match('/WHERE(\s+)[a-zA-Z]/', $query) < 1){
-					echo($query);
 				$query = preg_replace('/WHERE/', '', $query);
-				
 			}
 			
 			if(preg_match('/HAVING(\s+)' . preg_quote($op) . '/', $query) > 0){
