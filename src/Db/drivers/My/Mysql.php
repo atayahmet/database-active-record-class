@@ -128,7 +128,8 @@ class Mysql implements MysqlInterface {
 
 	// Query string
 	protected static $query;
-
+        
+        protected static $affected_rows = 0;
 	// query result
 	protected static $qResult;
 
@@ -1117,7 +1118,8 @@ class Mysql implements MysqlInterface {
 				
 				throw new ErrorCatcher(self::$dbErr);
 			}
-		    
+		        
+                        self::$affected_rows = mysql_affected_rows();
 		}catch (ErrorCatcher $e) {
 			echo(ErrorCatcher::fire(array('e' => $e, 'q' => self::$query)));
 		}
@@ -1272,7 +1274,7 @@ class Mysql implements MysqlInterface {
 	 */
 	public static function affected_rows()
 	{
-		return mysql_affected_rows();
+		return self::$affected_rows;
 	}
 	
 	/**
@@ -1321,6 +1323,7 @@ class Mysql implements MysqlInterface {
 		self::$distinct = '';
 		self::$limit = '';
 		self::$offset = '';
+                self::$affected_rows = 0;
 		self::$table = '';
 	}
 	
