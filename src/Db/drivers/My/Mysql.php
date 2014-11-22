@@ -1274,7 +1274,7 @@ class Mysql implements MysqlInterface {
 	 */
 	public static function affected_rows()
 	{
-		return self::$affected_rows;
+		return mysql_affected_rows();
 	}
 	
 	/**
