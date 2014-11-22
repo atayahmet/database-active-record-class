@@ -175,7 +175,25 @@ class MysqlTest extends \PHPUnit_Framework_TestCase {
 
         public function testWhereIn()
         {
+            // where_in metodu iki farklı kullanımda test ediliyor
+            // 1. kullanım
             $result = DB::select('*')->from($this->table)->where_in('age', 18)->get();
+            $this->assertGreaterThanOrEqual(1, $result->num_rows());
+            
+            // 2. kullanım
+            $result = DB::select('*')->from($this->table)->where_in('name', array(18,21,25));
+            $this->assertGreaterThanOrEqual(1, $result->num_rows());
+        }
+
+        public function testOrWhereIn()
+        {
+            $result = DB::select('*')->from($this->table)->where('name','nothing')->or_where_in('age',18)->get();
+            $this->assertGreaterThanOrEqual(1, $result->num_rows());
+
+            $result = DB::select('*')->from($this->table)
+                ->where_in('age',18)->or_where_in('age',array(18,21,25))
+                ->get();
+
             $this->assertGreaterThanOrEqual(1, $result->num_rows());
         }
 }
