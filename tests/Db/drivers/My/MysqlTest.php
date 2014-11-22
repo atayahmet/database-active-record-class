@@ -10,18 +10,21 @@ class MysqlTest extends \PHPUnit_Framework_TestCase {
 
 	public function testInsert()
 	{
-		// ilk senaryomuz tabloya yeni kayıt oluşturma
-		// kullan¿c¿ tablosuna bir yeni üye ekliyoruz ve ard¿ndan etkilenen kay¿t say¿s¿n¿
-		// UnitTest'e gönderiyoruz
-		DB::insert('members',
-			array(
-			'name' 	=> 'Ahmet',
-			'age'	=> 18
-			)
-		);
+            DB::empty_table('members');
 
-		// sonuç istedi¿imiz gibimi kontrol ediyoruz.
-		$this->assertGreaterThan(0, DB::insert_id());
+	    // ilk senaryomuz tabloya yeni kayıt oluşturma
+	    // kullan¿c¿ tablosuna bir yeni üye ekliyoruz ve ard¿ndan etkilenen kay¿t say¿s¿n¿
+	    // UnitTest'e gönderiyoruz
+	    DB::insert('members',
+	        array(
+		  'name' => 'Ahmet',
+		  'age'  => 18
+	        )
+	    );
+
+	    // sonuç istedi¿imiz gibimi kontrol ediyoruz.
+	    $this->assertGreaterThan(0, DB::insert_id());
+		
 	}
 
 	public function testUpdate()
@@ -39,8 +42,13 @@ class MysqlTest extends \PHPUnit_Framework_TestCase {
 			->update('members', array('name' => 'Serdar'));
 		
 		// etkilenen satır sayısı TestCase'e gönderiliyor
-		$this->assertGreaterThan(0,DB::affected_rows());
+		//$this->assertGreaterThan(0, DB::affected_rows());
 	
 	}
+
+        public function testUpdateBatch()
+        {
+            
+        }
 }
 
