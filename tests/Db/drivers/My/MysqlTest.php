@@ -125,5 +125,59 @@ class MysqlTest extends \PHPUnit_Framework_TestCase {
             // sonuçları kontrol ediyoruz
             $this->assertEquals($total, $newTotal);
         }
+
+        public function testSelect()
+        {
+            // member tablosunda sadece name alanını tanımlıyoruz
+            $result = DB::select('name')->from($this->table)->get();
+            
+            // gelen alanı kontrol ediyoruz
+            $this->assertEquals('name', key($result->row_array()));
+
+        }
+
+        public function testWhere()
+        {
+            // ilk olarak boş sonuç dönecek bir sorgu gönderiyoruz
+            $result = DB::select('*')->from($this->table)->where('name', 'nothing')->get();
+            $this->assertFalse($result->num_rows() > 0);
+            
+            // sonrasında farklı varyoslarla aynı sorguyu çalıştırıyoruz
+            // varyasyon 1
+            $result = DB::select('*')->from($this->table)->where('name','Ali')->get();
+            $this->assertGreaterThanOrEqual(1, $result->num_rows());
+            
+            // varyasyon 2
+            $result = DB::select('*')->from($this->table)->where(array('name' => 'Ali'))->get();
+            $this->assertGreaterThanOrEqual(1, $result->num_rows());
+            
+            // varyasyon 3
+            $result = DB::select('*')->from($this->table)->where("name = 'Ali'")->get();
+            $this->assertGreaterThanOrEqual(1, $result->num_rows());
+
+        }
+
+        public function testOrWhere()
+        {
+            // or_where metodunun 3 ayrı kullanımı test ediliyor
+            // değerleri iki ayrı parametre olarak gönderiliyor
+            $result = DB::select('*')->from($this->table)->where('name', 'nothing')->or_where('name', 'Ali')->get();
+            $this->assertGreaterThanOrEqual(1, $result->num_rows());
+            
+            // parametreler bir dizi içinde gönderiliyor
+            $result = DB::select('*')->from($this->table)->where(array('name' => 'nothing'))->or_where(array('name' => 'Ali'))->get();
+            $this->assertGreaterThanOrEqual(1, $result->num_rows());
+            
+            // native sql cümlesi olarak gönderiliyor
+            $result = DB::select('*')->from($this->table)->where("name = 'nothing'")->or_where("name = 'Ali'")->get();
+            $this->assertGreaterThanOrEqual(1, $result->num_rows());
+        }
+
+        public function testWhereIn()
+        {
+            $result = DB::select('*')->from($this->table)->where_in('age', 18)->get();
+            $this->assertGreaterThanOrEqual(1, $result->num_rows());
+        }
 }
+
 
