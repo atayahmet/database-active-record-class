@@ -498,7 +498,7 @@ class Mysql implements MysqlInterface {
 	 */
 	public static function from($table = null)
 	{
-		self::$table = $table;
+		self::$table = self::dbprefix($table);
 		
 		return new static;
 	}
@@ -1120,11 +1120,11 @@ class Mysql implements MysqlInterface {
 			}
 		        
                         self::$affected_rows = mysql_affected_rows();
+
+                        self::emptySqlVars();
 		}catch (ErrorCatcher $e) {
 			echo(ErrorCatcher::fire(array('e' => $e, 'q' => self::$query)));
 		}
-			
-		self::emptySqlVars();
 	}
 
 	/**
@@ -1169,6 +1169,8 @@ class Mysql implements MysqlInterface {
 	 */
 	public static function num_rows()
 	{
+                self::emptySqlVars();
+
 		return mysql_num_rows(self::$qResult);
 	}
 	
