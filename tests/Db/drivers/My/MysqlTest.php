@@ -288,6 +288,26 @@ class MysqlTest extends \PHPUnit_Framework_TestCase {
             $result = DB::select('*')->from($this->table)->where_in('age', 30)->or_where_not_in('age', array(21,18))->get();
             $this->assertGreaterThan(0, $result->num_rows());
         }
+
+        /**
+        *
+        * @like
+        *
+        * bir çok varyasyonda test ediliyor
+        *
+        */
+        public function testLike()
+        {
+            $result = DB::select('*')->from($this->table)->like('name','Emr')->get();
+            $this->assertGreaterThan(0, $result->num_rows());
+
+            $result = DB::select('*')->from($this->table)->like('name','re','before')->get();
+            $this->assertGreaterThan(0, $result->num_rows());
+            
+            $result = DB::select('*')->from($this->table)->like('name','Emr','after')->get();
+            $this->assertGreaterThan(0, $result->num_rows());
+            //exit(var_dump(DB::dump('array')));
+        }
 }
 
 
