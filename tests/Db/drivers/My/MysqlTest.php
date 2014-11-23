@@ -1,6 +1,6 @@
 <?php
 
-namespace tests;
+namespace tests\Db\drivers\My;
 
 require __DIR__ . '/../../../../../../../vendor/autoload.php';
 
@@ -8,7 +8,12 @@ use \Db\Query as DB;
 
 class MysqlTest extends \PHPUnit_Framework_TestCase {
         public $table = 'members';
-
+        
+        /**
+        * 
+        * @method empty_table
+        *
+        */
         public function testEmptyTable()
         {
             // tablo sıfırlanıyor
@@ -17,7 +22,12 @@ class MysqlTest extends \PHPUnit_Framework_TestCase {
             // TestCase ile kontrol ediyoruz.
             $this->assertEquals(0, DB::count_all($this->table));
         }
-
+        
+        /**
+        *
+        * @method insert
+        *
+        */
 	public function testInsert()
 	{
             DB::empty_table($this->table);
@@ -37,6 +47,12 @@ class MysqlTest extends \PHPUnit_Framework_TestCase {
 		
 	}
         
+        /**
+        *
+        * @method insert_batch
+        *
+        * Çoklu kayıt ekleme 
+        */
         public function testInsertBatch()
         {
             $total =  DB::count_all($this->table) + 4;
@@ -66,6 +82,12 @@ class MysqlTest extends \PHPUnit_Framework_TestCase {
            $this->assertEquals($total, $newTotal);
 
         }
+
+        /**
+        *
+        * @method update
+        *
+        */
 	public function testUpdate()
 	{
 		// ikinci senaryomuz update metodu.
@@ -82,11 +104,17 @@ class MysqlTest extends \PHPUnit_Framework_TestCase {
 		// etkilenen satır sayısı TestCase'e gönderiliyor
 		$this->assertGreaterThan(0, DB::affected_rows());	
 	}
-
+        
+        /**
+        *
+        * @method update_batch
+        *
+        * veritabanında toplam da 3 satır etkilenecek şekilde bir güncelleme yapacağız
+        * sonra etkilenen satır sayısını TestCase ile kontrol edeceğiz
+        *
+        */
         public function testUpdateBatch()
         {
-            // veritabanında 3 tane satırın değerini değiştireceğiz
-            // sonra etkilenen satır sayısını TestCase ile kontrol edeceğiz
             $data = array(
                 array(
                   'name'  => 'Ali',
@@ -110,7 +138,12 @@ class MysqlTest extends \PHPUnit_Framework_TestCase {
             // kontrol ediyoruz
             $this->assertEquals(3,DB::affected_rows());
         }
-
+        
+        /**
+        *
+        * @method delete
+        *
+        */
         public function testDelete()
         {
             // genel toplamı alıp sonuçtan bir çıkarıyoruz
@@ -125,7 +158,12 @@ class MysqlTest extends \PHPUnit_Framework_TestCase {
             // sonuçları kontrol ediyoruz
             $this->assertEquals($total, $newTotal);
         }
-
+        
+        /**
+        *
+        * @method select
+        *
+        */
         public function testSelect()
         {
             // member tablosunda sadece name alanını tanımlıyoruz
@@ -136,6 +174,11 @@ class MysqlTest extends \PHPUnit_Framework_TestCase {
 
         }
 
+        /**
+        *
+        * @method where
+        *
+        */
         public function testWhere()
         {
             // ilk olarak boş sonuç dönecek bir sorgu gönderiyoruz
@@ -156,10 +199,16 @@ class MysqlTest extends \PHPUnit_Framework_TestCase {
             $this->assertGreaterThanOrEqual(1, $result->num_rows());
 
         }
-
+        
+        /**
+        *
+        * @method or_where
+        *
+        * or_where metodunun üç ayrı kullanımı test ediliyor 
+        *
+        */
         public function testOrWhere()
         {
-            // or_where metodunun 3 ayrı kullanımı test ediliyor
             // değerleri iki ayrı parametre olarak gönderiliyor
             $result = DB::select('*')->from($this->table)->where('name', 'nothing')->or_where('name', 'Ali')->get();
             $this->assertGreaterThanOrEqual(1, $result->num_rows());
@@ -172,10 +221,16 @@ class MysqlTest extends \PHPUnit_Framework_TestCase {
             $result = DB::select('*')->from($this->table)->where("name = 'nothing'")->or_where("name = 'Ali'")->get();
             $this->assertGreaterThanOrEqual(1, $result->num_rows());
         }
-
+        
+        /**
+        *
+        * @method where_in
+        *
+        * where_in metodu iki farklı kullanımda test ediliyor
+        *
+        */
         public function testWhereIn()
         {
-            // where_in metodu iki farklı kullanımda test ediliyor
             // 1. kullanım
             $result = DB::select('*')->from($this->table)->where_in('age', 18)->get();
             $this->assertGreaterThanOrEqual(1, $result->num_rows());
@@ -184,7 +239,12 @@ class MysqlTest extends \PHPUnit_Framework_TestCase {
             $result = DB::select('*')->from($this->table)->where_in('name', array(18,21,25));
             $this->assertGreaterThanOrEqual(1, $result->num_rows());
         }
-
+        
+        /**
+        *
+        * @method or_where_in
+        *
+        */
         public function testOrWhereIn()
         {
             $result = DB::select('*')->from($this->table)->where('name','nothing')->or_where_in('age',18)->get();
@@ -195,6 +255,38 @@ class MysqlTest extends \PHPUnit_Framework_TestCase {
                 ->get();
 
             $this->assertGreaterThanOrEqual(1, $result->num_rows());
+        }
+
+        /**
+        * 
+        * @method where_not_in
+        *
+        * İki farklı kullanımda test ediliyor
+        *
+        */
+        public function testWhereNotIn()
+        {
+            $result = DB::select('*')->from($this->table)->where_not_in('age', 21)->get();
+            $this->assertGreaterThan(0, $result->num_rows());
+
+            $result = DB::select('*')->from($this->table)->where_not_in('age', array(21,18))->get();
+            $this->assertGreaterThan(0, $result->num_rows());
+        }
+
+        /**
+        *
+        * @method or_where_not_in
+        *
+        * İki farklı kullanımda test ediliyor
+        *
+        */
+        public function testOrWhereNotIn()
+        {
+            $result = DB::select('*')->from($this->table)->where_in('age', 30)->or_where_not_in('age', 21)->get();
+            $this->assertGreaterThan(0, $result->num_rows());
+
+            $result = DB::select('*')->from($this->table)->where_in('age', 30)->or_where_not_in('age', array(21,18))->get();
+            $this->assertGreaterThan(0, $result->num_rows());
         }
 }
 
