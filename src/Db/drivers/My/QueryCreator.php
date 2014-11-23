@@ -802,7 +802,7 @@ class QueryCreator {
 		}
 		
 		$query = self::sqlRegulator($query);
-
+                
 		self::emptySqlVars();
 		
 		return $query;
