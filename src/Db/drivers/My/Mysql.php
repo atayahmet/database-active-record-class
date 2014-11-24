@@ -140,7 +140,10 @@ class Mysql implements MysqlInterface {
 	protected static $Queries = array();
 
 	// Database connection close check variable
-	protected static $dbClosed = false;
+    protected static $dbClosed = false;
+
+    static $instances = 0;
+    static $instance;
 
 	/**
 	 * Query select collectors
@@ -332,31 +335,68 @@ class Mysql implements MysqlInterface {
 	 *
 	 * @param string $field
 	 * @param string/integer $value
-	 * @param string $pos
+     * @param string $pos
+     *
+     * OR
+     *
+     * @param array $field and $value
+     * @param integer $pos
+     *
 	 * @return new static
 	 */
 	public static function like($field = false, $value = false, $pos = 'both')
-	{
-		if($field && $value){
-			self::$like[] = array($field => array('val' => $value, 'pos' => $pos));
-		}
-		
+    {
+        self::likeArgs(func_get_args(),'like');
+       
 		return new static;
 	}
+    
+    private static function likeArgs($args = false, $type = false)
+    {
+        $likeArr = array('like' => array(), 'pos' => '');
 
-	/**
+        if(count($args) > 0){
+            $defaultPos = 'both';
+            $allPos = array('before','after','both');
+
+            if(is_array($args[0])){
+                $likeArr['likes'] = $args[0];
+
+                if(isset($args[1])){
+                    $likeArr['pos'] = in_array($args[1], $allPos) ? $args[1] : $defaultPos;
+                }else{
+                    $likeArr['pos'] = $defaultPos;
+                }
+            }else{
+                if(isset($args[1])){
+                    $likeArr['likes'] = array($args[0] => $args[1]);
+                    $likeArr['pos'] = $defaultPos;
+                }
+            }
+
+            foreach($likeArr['likes'] as $_field => $la){
+                self::$$type  = array(array($_field => array('val' => $la, 'pos' => $likeArr['pos'])));
+            }
+        }
+    }
+    
+    /**
 	 * Query OR LIKE parameter collectors
 	 *
 	 * @param string $field
 	 * @param string/integer $value
-	 * @param string $pos
+     * @param string $pos
+     *
+     * OR
+     *
+     * @param array $field and $value
+     * @param integer $pos
+     *
 	 * @return new static
 	 */
 	public static function or_like($field = false, $value = false, $pos = 'both')
-	{
-		if($field && $value){
-			self::$or_like[] = array($field => array('val' => $value, 'pos' => $pos));
-		}
+    {
+        self::likeArgs(func_get_args(),'or_like');
 		
 		return new static;
 	}
@@ -370,10 +410,8 @@ class Mysql implements MysqlInterface {
 	 * @return new static
 	 */
 	public static function not_like($field = false, $value = false, $pos = 'both')
-	{
-		if($field && $value){
-			self::$not_like[] = array($field => array('val' => $value, 'pos' => $pos));
-		}
+    {
+        self::likeArgs(func_get_args(),'not_like');
 		
 		return new static;
 	}
@@ -387,11 +425,9 @@ class Mysql implements MysqlInterface {
 	 * @return new static
 	 */
 	public static function or_not_like($field = false, $value = false, $pos = 'both')
-	{
-		if($field && $value){
-			self::$or_not_like[] = array($field => array('val' => $value, 'pos' => $pos));
-		}
-		
+    {
+        self::likeArgs(func_get_args(),'or_not_like');
+
 		return new static;
 	}
 	
@@ -609,7 +645,7 @@ class Mysql implements MysqlInterface {
 		
 		return clone new static;
 	}
-	
+
 	/**
 	 * will make of the get and the where methods
 	 *
@@ -1093,9 +1129,9 @@ class Mysql implements MysqlInterface {
 	 */
 	protected static function execute()
 	{
-		try {
+        try {
 			self::$dbLink = mysql_connect(self::$dbconf['hostname'], self::$dbconf['username'], self::$dbconf['password']);
-		
+
 			if(!self::$dbLink){
 				self::$dbErr = 'Check database connections info';
 				
@@ -1103,7 +1139,7 @@ class Mysql implements MysqlInterface {
 			}
 			
 			mysql_select_db(self::$dbconf['database'], self::$dbLink);
-			mysql_set_charset('utf8',self::$dbLink); 
+			mysql_set_charset('utf8',self::$dbLink);
 			
 			self::$Queries[md5(self::$query)]['query'] = self::$query;
 			
@@ -1119,9 +1155,8 @@ class Mysql implements MysqlInterface {
 				throw new ErrorCatcher(self::$dbErr);
 			}
 		        
-                        self::$affected_rows = mysql_affected_rows();
-
-                        self::emptySqlVars();
+                self::$affected_rows = mysql_affected_rows();
+                self::emptySqlVars();
 		}catch (ErrorCatcher $e) {
 			echo(ErrorCatcher::fire(array('e' => $e, 'q' => self::$query)));
 		}
@@ -1169,7 +1204,7 @@ class Mysql implements MysqlInterface {
 	 */
 	public static function num_rows()
 	{
-                self::emptySqlVars();
+        self::emptySqlVars();
 
 		return mysql_num_rows(self::$qResult);
 	}
@@ -1232,7 +1267,7 @@ class Mysql implements MysqlInterface {
 		}
 		
 		self::dbConnectionClose();
-		
+
 		return $ResultObj;
 	}
 	
@@ -1262,7 +1297,9 @@ class Mysql implements MysqlInterface {
 				
 				$i++;
 			}
-			
+
+           
+
 			self::dbConnectionClose();
 			
 			return $ResultArr;
@@ -1325,7 +1362,7 @@ class Mysql implements MysqlInterface {
 		self::$distinct = '';
 		self::$limit = '';
 		self::$offset = '';
-                self::$affected_rows = 0;
+        self::$affected_rows = 0;
 		self::$table = '';
 	}
 	
