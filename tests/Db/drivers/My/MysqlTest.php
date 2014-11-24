@@ -55,7 +55,7 @@ class MysqlTest extends \PHPUnit_Framework_TestCase {
         */
         public function testInsertBatch()
         {
-            $total =  DB::count_all($this->table) + 4;
+            $total =  DB::count_all($this->table) + 8;
             
             DB::insert_batch($this->table, array(
                 array(
@@ -73,6 +73,22 @@ class MysqlTest extends \PHPUnit_Framework_TestCase {
                 array(
                    'name' => 'Ali',
                    'age' => 22
+               ),
+               array(
+                   'name' => 'Emel',
+                   'age' => 24
+               ),
+               array(
+                   'name' => 'Nihal',
+                   'age' => 27
+               ),
+               array(
+                   'name' => 'Burcu',
+                   'age' => 15
+               ),
+               array(
+                   'name' => 'Sinan',
+                   'age' => 26
                 )
               )
             );
@@ -400,6 +416,50 @@ class MysqlTest extends \PHPUnit_Framework_TestCase {
             $result = DB::select('*')->from($this->table)->not_like('name','Ali')->or_not_like(array('name' => 'not'),'after')->get();
             $this->assertGreaterThan(0, $result->num_rows());
 
+        }
+
+        /**
+         *
+         * @order_by
+         *
+         * ASC/DESC/RANDOM
+         *
+         * */
+        public function testOrderBy()
+        {
+            $result1 = DB::select('*')->from($this->table)->order_by('name','asc')->get();
+            $data1 = $result1->row()->name;
+
+            $result2 = DB::select('*')->from($this->table)->order_by('name','desc')->get();
+            $data2 = $result2->row()->name;
+
+            $this->assertFalse($data1 == $data2);
+
+            $random1 = DB::select('*')->from($this->table)->order_by('name', 'random')->get()->row()->name;
+            $random2 = DB::select('*')->from($this->table)->order_by('name', 'random')->get()->row()->name;
+
+            $this->assertFalse($random1 == $random2);
+        }
+           
+        /**
+         *
+         * @group_by
+         *
+         * */
+        public function testGroupBy()
+        {
+            $result1 = DB::where('age', 21)->get('members')->num_rows();
+            $result2 = DB::where('age', 21)->group_by('age')->get('members')->num_rows();
+
+            $this->assertFalse($result1 == $result2);
+        }
+
+        public function testHaving()
+        {
+            $result1 = DB::group_by('age')->having("age > '18'")->get('members')->row()->age;
+            $result2 = DB::group_by('age')->having("age < '19'")->get('members')->row()->age;
+            
+            $this->assertFalse($result1 == $result2);
         }
         
 
