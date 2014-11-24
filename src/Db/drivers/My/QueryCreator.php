@@ -817,11 +817,15 @@ class QueryCreator {
 	 */
 	protected static function sqlRegulator($query)
 	{
-		foreach(array('AND','OR') as $op){
+		foreach(array('AND','OR','GROUP BY','ORDER BY') as $op){
 			if(preg_match('/WHERE(\s+)' . preg_quote($op) . '/', $query) > 0){
 				if(preg_match('/WHERE(\s+)ORDER BY/', $query) > 0){
 					$query = preg_replace('/WHERE/', '', $query);
-				}else{
+                }
+
+                elseif(preg_match('/WHERE(\s+)GROUP BY/', $query) > 0){
+                    $query = preg_replace('/WHERE/', '', $query);
+                }else{
 					$query = preg_replace('/WHERE(\s+)' . preg_quote($op) . '/', 'WHERE ', $query);
 				}
 			}
