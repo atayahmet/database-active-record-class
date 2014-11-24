@@ -7,7 +7,7 @@ require __DIR__ . '/../../../../../../../vendor/autoload.php';
 use \Db\Query as DB;
 
 class MysqlTest extends \PHPUnit_Framework_TestCase {
-        public $table = 'members';
+        private $table = 'members';
         
         /**
         * 
@@ -37,8 +37,8 @@ class MysqlTest extends \PHPUnit_Framework_TestCase {
 	    // UnitTest'e gönderiyoruz
 	    DB::insert($this->table,
 	        array(
-		  'name' => 'Ahmet',
-		  'age'  => 18
+		        'name' => 'Ahmet',
+		        'age'  => 18
 	        )
 	    );
 
@@ -290,12 +290,12 @@ class MysqlTest extends \PHPUnit_Framework_TestCase {
         }
 
         /**
-        *
-        * @like
-        *
-        * bir çok varyasyonda test ediliyor
-        *
-        */
+         *
+         * @like
+         *
+         * Tüm varyasyonları test ediliyor
+         *
+         * */
         public function testLike()
         {
             $result = DB::select('*')->from($this->table)->like('name','Emr')->get();
@@ -306,8 +306,103 @@ class MysqlTest extends \PHPUnit_Framework_TestCase {
             
             $result = DB::select('*')->from($this->table)->like('name','Emr','after')->get();
             $this->assertGreaterThan(0, $result->num_rows());
-            //exit(var_dump(DB::dump('array')));
+            
+            $result = DB::select('*')->from($this->table)->like(array('name' => 'Emr'))->get();
+            $this->assertGreaterThan(0, $result->num_rows());
+
+            $result = DB::select('*')->from($this->table)->like(array('name' => 'Emr'),'after')->get();
+            $this->assertGreaterThan(0, $result->num_rows());
+
+             $result = DB::select('*')->from($this->table)->like(array('name' => 're'),'before')->get();
+            $this->assertGreaterThan(0, $result->num_rows());
         }
+
+        /**
+         *
+         * @or_like
+         *
+         * Tüm varyasyonları test ediliyor
+         *
+         * */
+        public function testOrLike()
+        {
+            $result = DB::select('*')->from($this->table)->like('name', 'Emr')->or_like('name', 'Ali')->get();
+            $this->assertGreaterThan(0, $result->num_rows());
+
+            $result = DB::select('*')->from($this->table)->like('name', 'nothing')->or_like('name', 'li','before')->get();
+            $this->assertGreaterThan(0, $result->num_rows());
+
+            $result = DB::select('*')->from($this->table)->like('name', 'nothing')->or_like('name', 'li','Emr','after')->get();
+            $this->assertGreaterThan(0, $result->num_rows());
+
+            $result = DB::select('*')->from($this->table)->like('name', 'nothing')->or_like(array('name' => 'Ali'))->get();
+            $this->assertGreaterThan(0, $result->num_rows());
+
+            $result = DB::select('*')->from($this->table)->like('name', 'nothing')->or_like(array('name' => 'li'),'before')->get();
+            $this->assertGreaterThan(0, $result->num_rows());
+
+            $result = DB::select('*')->from($this->table)->like('name', 'nothing')->or_like(array('name' => 'Emr'),'after')->get();
+            $this->assertGreaterThan(0, $result->num_rows());
+        }
+        
+        /**
+         *
+         * @not_like
+         *
+         * Tüm varyasyonları test ediliyor
+         *
+         * */
+        public function testNotLike()
+        {
+            $result = DB::select('*')->from($this->table)->not_like('name','nothing')->get();
+            $this->assertGreaterThan(0, $result->num_rows());
+
+            $result = DB::select('*')->from($this->table)->not_like('name','hing','before')->get();
+            $this->assertGreaterThan(0, $result->num_rows());
+
+            $result = DB::select('*')->from($this->table)->not_like('name','not','after')->get();
+            $this->assertGreaterThan(0, $result->num_rows());
+
+            $result = DB::select('*')->from($this->table)->not_like(array('name' => 'nothing'))->get();
+            $this->assertGreaterThan(0, $result->num_rows());
+
+            $result = DB::select('*')->from($this->table)->not_like(array('name' => 'hing'),'before')->get();
+            $this->assertGreaterThan(0, $result->num_rows());
+
+            $result = DB::select('*')->from($this->table)->not_like(array('name' => 'not'),'after')->get();
+            $this->assertGreaterThan(0, $result->num_rows());
+        }
+        
+        /**
+         *
+         * @or_not_like
+         *
+         * Tüm varyasyonları test ediliyor
+         *
+         * */
+        public function testOrNotLike()
+        {
+            $result = DB::select('*')->from($this->table)->not_like('name','Ali')->or_not_like('name','nothing')->get();
+            $this->assertGreaterThan(0, $result->num_rows());
+
+            $result = DB::select('*')->from($this->table)->not_like('name','Ali')->or_not_like('name','hing','before')->get();
+            $this->assertGreaterThan(0, $result->num_rows());
+
+            $result = DB::select('*')->from($this->table)->not_like('name','Ali')->or_not_like('name','not','after')->get();
+            $this->assertGreaterThan(0, $result->num_rows());
+
+            $result = DB::select('*')->from($this->table)->not_like('name','Ali')->or_not_like(array('name' => 'nothing'))->get();
+            $this->assertGreaterThan(0, $result->num_rows());
+
+            $result = DB::select('*')->from($this->table)->not_like('name','Ali')->or_not_like(array('name' => 'hing'),'before')->get();
+            $this->assertGreaterThan(0, $result->num_rows());
+            
+            $result = DB::select('*')->from($this->table)->not_like('name','Ali')->or_not_like(array('name' => 'not'),'after')->get();
+            $this->assertGreaterThan(0, $result->num_rows());
+
+        }
+        
+
 }
 
 
