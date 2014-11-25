@@ -575,4 +575,143 @@ class MysqlTest extends \PHPUnit_Framework_TestCase {
 
             $this->assertEquals($native, $active);
         }
+        
+        /**
+        *
+        * @query
+        *
+        * */
+        public function testQuery()
+        {
+            $result = DB::query("SELECT * FROM " . DB::dbprefix($this->table) . " WHERE age > 18");
+
+            $this->assertGreaterThanOrEqual(0, $result->num_rows());
+        }
+        /**
+        *
+        * @get
+        *
+        * */
+        public function testGet()
+        {
+           $result =  DB::get($this->table);
+           $this->assertGreaterThan(0, $result->num_rows());
+        }
+        
+        /**
+        * 
+        * @get_where
+        *
+        * */
+        public function testGetWhere()
+        {
+            $result = DB::get_where($this->table, array('age >' => 21));
+            $this->assertGreaterThan(0, $result->num_rows());
+            
+            $limit = 2;
+            $result = DB::get_where($this->table, array('age >' => 21), $limit);
+            $name = $result->row()->name;
+            $this->assertEquals($result->num_rows(), $limit);
+
+            $offset = 1;
+            $result = DB::get_where($this->table, array('age >' => 21), $limit, $offset)->row();
+            $this->assertFalse($result->name == $name);
+        }
+        
+        /**
+        *
+        * @dbprefix
+        *
+        */
+        public function testDbPrefix()
+        {
+            $table = $this->table;
+            $prefixTable = DB::dbprefix($table);
+
+            $this->assertFalse($table == $prefixTable);
+        }
+
+        /**
+        *
+        * @num_rows
+        *
+        * */
+        public function testNumRows()
+        {
+            $this->assertGreaterThanOrEqual(0, DB::get($this->table)->num_rows());
+        }
+        
+        /**
+        *
+        * @row
+        *
+        * */
+        public function testRow()
+        {
+            $result = DB::get($this->table)->result()->{2};
+            $row = DB::get($this->table)->row(2);
+            
+            $this->assertTrue($result->name == $row->name);
+        }
+        
+        /**
+        *
+        * @row_array
+        *
+        * */
+        public function testRowArray()
+        {
+            $result = DB::get($this->table)->result()->{2};
+            $rowArray = DB::get($this->table)->row_array(2);
+
+            $this->assertTrue($result->name == $rowArray['name']);
+        }
+
+        /**
+        * 
+        * @result
+        *
+        */
+        public function testResult()
+        {
+            $result = DB::get($this->table)->result();
+
+            $this->assertTrue(is_object($result) && count($result) > 0);
+        }
+        
+        /**
+        *
+        * @result_array
+        *
+        * */
+        public function testResultArray()
+        {
+            $resultArray = DB::get($this->table)->result_array();
+
+            $this->assertTrue(is_array($resultArray) && count($resultArray));
+        }
+        
+        /**
+        *
+        * @affected_rows
+        *
+        */
+        public function testAffectedRows()
+        {
+            DB::insert($this->table, array(
+                    'name' => 'Sinan',
+                    'age' => 22,
+                    'city_id' => 2
+                )
+            );
+            
+            $this->assertTrue(DB::affected_rows() > 0);
+
+        }
+
+        public function testDump()
+        {
+            $this->assertContains('table', DB::dump());
+            $this->assertTrue(is_array(DB::dump('array')));
+        }
 }
