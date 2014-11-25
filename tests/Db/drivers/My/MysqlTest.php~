@@ -562,12 +562,7 @@ class MysqlTest extends \PHPUnit_Framework_TestCase {
 
             $this->assertEquals($native, $active);
         }
-        
-        /**
-         *
-         * @count_all_results
-         *
-         * */
+
         public function testCountAllResults()
         {
             $native = DB::query("SELECT count(*) as total FROM " . DB::dbprefix($this->table) . " WHERE age > 21")->row()->total;
