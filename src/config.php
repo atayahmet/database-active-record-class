@@ -7,11 +7,11 @@ $current = 'mysql:connect1';
 $db = array(
 	'mysql' => array(
 		'connect1' => array(
-			'hostname' => '127.0.0.1',
-			'username' => 'root',
+			'hostname' => 'localhost',
+                        'username' => 'root',
 			'password' => '',
-			'database' => 'aa_atacms',
-			'dbprefix' => 'aa_'
+			'database' => 'test_active_record_class',
+			'dbprefix' => 'ar_'
 
 		)
 	)
