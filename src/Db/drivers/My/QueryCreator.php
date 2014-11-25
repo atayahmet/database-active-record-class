@@ -54,7 +54,9 @@ class QueryCreator {
 	protected static $groupby;
 	protected static $orderby;
 	protected static $distinct;
-	
+    protected static $operators = array('AND','OR');
+    protected static $sqlFunc = array('GROUP BY','ORDER BY','LIMIT');
+
 	/**
 	 * Query select creator
 	 *
@@ -805,8 +807,7 @@ class QueryCreator {
                 
 		self::emptySqlVars();
 		
-		return $query;
-		
+		return $query;	
 	}
 	
 	/**
@@ -817,17 +818,11 @@ class QueryCreator {
 	 */
 	protected static function sqlRegulator($query)
 	{
-		foreach(array('AND','OR','GROUP BY','ORDER BY') as $op){
-			if(preg_match('/WHERE(\s+)' . preg_quote($op) . '/', $query) > 0){
-				if(preg_match('/WHERE(\s+)ORDER BY/', $query) > 0){
-					$query = preg_replace('/WHERE/', '', $query);
-                }
-
-                elseif(preg_match('/WHERE(\s+)GROUP BY/', $query) > 0){
-                    $query = preg_replace('/WHERE/', '', $query);
-                }else{
-					$query = preg_replace('/WHERE(\s+)' . preg_quote($op) . '/', 'WHERE ', $query);
-				}
+		foreach(array_merge(self::$operators,self::$sqlFunc) as $op){
+            if(preg_match('/WHERE(\s+)' . preg_quote($op) . '/', $query) > 0){
+                $query = self::sqlRegHelper($query, $op, function($query, $op){
+                   return preg_replace('/WHERE(\s+)' . preg_quote($op) . '/', 'WHERE ', $query);
+                });
 			}
 			
 			if(preg_match('/WHERE(\s+)[a-zA-Z]/', $query) < 1){
@@ -841,7 +836,26 @@ class QueryCreator {
 		
 		return preg_replace('/(\s+)/', ' ',$query);
 	}
-	
+    
+
+    private static function sqlRegHelper($query, $op, $callback)
+    {
+        $callBRun = true;
+        
+        foreach(self::$sqlFunc as $sf){
+            if(preg_match('/WHERE(\s+)' . preg_quote($sf) . '/', $query) > 0){
+                $query = preg_replace('/WHERE/', '', $query);
+                $callBRun = false;
+            }
+        }
+
+        if($callBRun){
+            $query = $callback($query, $op);
+        }
+
+        return $query;
+    }
+
 	/**
 	 * reset the query variables
 	 *
